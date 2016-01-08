@@ -42,12 +42,15 @@ void generate_prims(MAZE_SIZE);
 void add_neighbors_to_frontier(node*, MAZE_SIZE);
 void check_neighbors(node*, MAZE_SIZE);
 void initialize_array(MAZE_SIZE);
+void print_array(MAZE_SIZE);
 
 int main()
 {
 	srand(time(NULL));
 
 	generate_prims(SMALL);
+	print_array(SMALL);
+
     return 0;
 }
 
@@ -74,19 +77,20 @@ void generate_prims(MAZE_SIZE map_size)
 
 		while(!prims_frontier_maze.empty())
 		{
-			int location = rand() % prims_frontier_maze.size();
+			int location = rand() % prims_frontier_maze.size() - 1;
 
 			cout << "location: " << location << endl;
 
-			for (int i = rand() % prims_frontier_maze.size() - 1; i > 0; i--)
+			for (int i = location; i > 0; i--)
 			{
 				prims_holder.push_back(prims_frontier_maze.back());
 				prims_frontier_maze.pop_back();
 				cout << prims_frontier_maze.size() << endl;
 			}
-			cout << "after first for loop" << endl;
+
 			prims_in_maze.push_back(prims_frontier_maze.back());
 			prims_frontier_maze.pop_back();
+
 			while (!prims_holder.empty())
 			{
 				cout << prims_holder.size() << endl;
@@ -268,90 +272,110 @@ void add_neighbors_to_frontier(node* home, MAZE_SIZE size)
 	{
 	case SMALL:
 		if (current_x + 1 < SMALL_WIDTH && small_array[current_x + 1][current_y]->
-			has_been_visited == false)
+			has_been_visited == false && small_array[current_x + 1][current_y]->
+			is_in_frontier == false)
 			{
 				prims_frontier_maze.push_back(small_array[current_x + 1][current_y]);
+				small_array[current_x + 1][current_y]->is_in_frontier = true;
 			}
 		if (current_x - 1 > -1 && small_array[current_x - 1][current_y]->
-			has_been_visited == false)
+			has_been_visited == false && small_array[current_x - 1][current_y]->
+			is_in_frontier == false)
 			{
 				prims_frontier_maze.push_back(small_array[current_x - 1][current_y]);
+				small_array[current_x - 1][current_y]->is_in_frontier = true;
 			}
 		if (current_y + 1 < SMALL_HEIGHT && small_array[current_x][current_y + 1]->
-			has_been_visited == false)
+			has_been_visited == false && small_array[current_x][current_y + 1]->
+			is_in_frontier == false)
 			{
 				prims_frontier_maze.push_back(small_array[current_x][current_y + 1]);
+				small_array[current_x][current_y + 1]->is_in_frontier = true;
 			}
 		if (current_y - 1 > -1 && small_array[current_x][current_y - 1]->
-			has_been_visited == false)
+			has_been_visited == false && small_array[current_x][current_y - 1]->
+			is_in_frontier == false)
 			{
 				prims_frontier_maze.push_back(small_array[current_x][current_y - 1]);
+				small_array[current_x][current_y - 1]->is_in_frontier = true;
 			}
 		break;
 	case MEDIUM:
-		if (current_x + 1 < MEDIUM_DIM && small_array[current_x + 1][current_y]->
+		if (current_x + 1 < MEDIUM_DIM && medium_array[current_x + 1][current_y]->
 			has_been_visited == false)
 			{
-				prims_frontier_maze.push_back(small_array[current_x + 1][current_y]);
+				prims_frontier_maze.push_back(medium_array[current_x + 1][current_y]);
+				medium_array[current_x + 1][current_y]->is_in_frontier = true;
 			}
-		if (current_x - 1 > -1 && small_array[current_x - 1][current_y]->
+		if (current_x - 1 > -1 && medium_array[current_x - 1][current_y]->
 			has_been_visited == false)
 			{
-				prims_frontier_maze.push_back(small_array[current_x - 1][current_y]);
+				prims_frontier_maze.push_back(medium_array[current_x - 1][current_y]);
+				medium_array[current_x - 1][current_y]->is_in_frontier = true;
 			}
-		if (current_y + 1 < MEDIUM_DIM && small_array[current_x][current_y + 1]->
+		if (current_y + 1 < MEDIUM_DIM && medium_array[current_x][current_y + 1]->
 			has_been_visited == false)
 			{
-				prims_frontier_maze.push_back(small_array[current_x][current_y + 1]);
+				prims_frontier_maze.push_back(medium_array[current_x][current_y + 1]);
+				medium_array[current_x][current_y + 1]->is_in_frontier = true;
 			}
-		if (current_y - 1 > -1 && small_array[current_x][current_y - 1]->
+		if (current_y - 1 > -1 && medium_array[current_x][current_y - 1]->
 			has_been_visited == false)
 			{
-				prims_frontier_maze.push_back(small_array[current_x][current_y - 1]);
+				prims_frontier_maze.push_back(medium_array[current_x][current_y - 1]);
+				medium_array[current_x][current_y - 1]->is_in_frontier = true;
 			}
 		break;
 	case LARGE:
-		if (current_x + 1 < LARGE_DIM && small_array[current_x + 1][current_y]->
+		if (current_x + 1 < LARGE_DIM && large_array[current_x + 1][current_y]->
 			has_been_visited == false)
 			{
-				prims_frontier_maze.push_back(small_array[current_x + 1][current_y]);
+				prims_frontier_maze.push_back(large_array[current_x + 1][current_y]);
+				large_array[current_x + 1][current_y]->is_in_frontier = true;
 			}
-		if (current_x - 1 > -1 && small_array[current_x - 1][current_y]->
+		if (current_x - 1 > -1 && large_array[current_x - 1][current_y]->
 			has_been_visited == false)
 			{
-				prims_frontier_maze.push_back(small_array[current_x - 1][current_y]);
+				prims_frontier_maze.push_back(large_array[current_x - 1][current_y]);
+				large_array[current_x - 1][current_y]->is_in_frontier = true;
 			}
-		if (current_y + 1 < LARGE_DIM && small_array[current_x][current_y + 1]->
+		if (current_y + 1 < LARGE_DIM && large_array[current_x][current_y + 1]->
 			has_been_visited == false)
 			{
-				prims_frontier_maze.push_back(small_array[current_x][current_y + 1]);
+				prims_frontier_maze.push_back(large_array[current_x][current_y + 1]);
+				large_array[current_x][current_y + 1]->is_in_frontier = true;
 			}
-		if (current_y - 1 > -1 && small_array[current_x][current_y - 1]->
+		if (current_y - 1 > -1 && large_array[current_x][current_y - 1]->
 			has_been_visited == false)
 			{
-				prims_frontier_maze.push_back(small_array[current_x][current_y - 1]);
+				prims_frontier_maze.push_back(large_array[current_x][current_y - 1]);
+				large_array[current_x][current_y - 1]->is_in_frontier = true;
 			}
 		break;
 	case GIANT:
-		if (current_x + 1 < HUGE_DIM && small_array[current_x + 1][current_y]->
+		if (current_x + 1 < HUGE_DIM && huge_array[current_x + 1][current_y]->
 			has_been_visited == false)
 			{
-				prims_frontier_maze.push_back(small_array[current_x + 1][current_y]);
+				prims_frontier_maze.push_back(huge_array[current_x + 1][current_y]);
+				huge_array[current_x + 1][current_y]->is_in_frontier = true;
 			}
-		if (current_x - 1 > -1 && small_array[current_x - 1][current_y]->
+		if (current_x - 1 > -1 && huge_array[current_x - 1][current_y]->
 			has_been_visited == false)
 			{
-				prims_frontier_maze.push_back(small_array[current_x - 1][current_y]);
+				prims_frontier_maze.push_back(huge_array[current_x - 1][current_y]);
+				huge_array[current_x - 1][current_y]->is_in_frontier = true;
 			}
-		if (current_y + 1 < HUGE_DIM && small_array[current_x][current_y + 1]->
+		if (current_y + 1 < HUGE_DIM && huge_array[current_x][current_y + 1]->
 			has_been_visited == false)
 			{
-				prims_frontier_maze.push_back(small_array[current_x][current_y + 1]);
+				prims_frontier_maze.push_back(huge_array[current_x][current_y + 1]);
+				huge_array[current_x][current_y + 1]->is_in_frontier = true;
 			}
-		if (current_y - 1 > -1 && small_array[current_x][current_y - 1]->
+		if (current_y - 1 > -1 && huge_array[current_x][current_y - 1]->
 			has_been_visited == false)
 			{
-				prims_frontier_maze.push_back(small_array[current_x][current_y - 1]);
+				prims_frontier_maze.push_back(huge_array[current_x][current_y - 1]);
+				huge_array[current_x][current_y - 1]->is_in_frontier = true;
 			}
 		break;
 	default:
@@ -555,4 +579,110 @@ void check_neighbors(node* home, MAZE_SIZE size)
 		}
 		
 	}
+}
+
+void print_array(MAZE_SIZE size)
+{
+	cout << "inside the print" << endl;
+	switch (size)
+	{
+	case SMALL:
+		for (int i = 0; i < SMALL_HEIGHT;i++)
+		{
+			for (int l = 0;i < SMALL_WIDTH;i++)
+			{
+				if (small_array[l][i]->north_is_open && !small_array[l][i]->east_is_open &&
+					!small_array[l][i]->south_is_open && !small_array[l][i]->west_is_open )
+				{
+					cout << 1 << " ";
+				}
+				if (!small_array[l][i]->north_is_open && small_array[l][i]->east_is_open &&
+					!small_array[l][i]->south_is_open && !small_array[l][i]->west_is_open)
+				{
+					cout << 2 << " ";
+				}
+				if (!small_array[l][i]->north_is_open && !small_array[l][i]->east_is_open &&
+					small_array[l][i]->south_is_open && !small_array[l][i]->west_is_open)
+				{
+					cout << 3 << " ";
+				}
+				if (!small_array[l][i]->north_is_open && !small_array[l][i]->east_is_open &&
+					!small_array[l][i]->south_is_open && small_array[l][i]->west_is_open)
+				{
+					cout << 4 << " ";
+				}
+				if (small_array[l][i]->north_is_open && small_array[l][i]->east_is_open &&
+					!small_array[l][i]->south_is_open && !small_array[l][i]->west_is_open)
+				{
+					cout << 5 << " ";
+				}
+				if (small_array[l][i]->north_is_open && !small_array[l][i]->east_is_open &&
+					small_array[l][i]->south_is_open && !small_array[l][i]->west_is_open)
+				{
+					cout << 6 << " ";
+				}
+				if (small_array[l][i]->north_is_open && !small_array[l][i]->east_is_open &&
+					!small_array[l][i]->south_is_open && small_array[l][i]->west_is_open)
+				{
+					cout << 7 << " ";
+				}
+				if (!small_array[l][i]->north_is_open && small_array[l][i]->east_is_open &&
+					small_array[l][i]->south_is_open && !small_array[l][i]->west_is_open)
+				{
+					cout << 8 << " ";
+				}
+				if (!small_array[l][i]->north_is_open && small_array[l][i]->east_is_open &&
+					!small_array[l][i]->south_is_open && small_array[l][i]->west_is_open)
+				{
+					cout << 9 << " ";
+				}
+				if (!small_array[l][i]->north_is_open && !small_array[l][i]->east_is_open &&
+					small_array[l][i]->south_is_open && small_array[l][i]->west_is_open)
+				{
+					cout << 0 << " ";
+				}
+				if (small_array[l][i]->north_is_open && small_array[l][i]->east_is_open &&
+					small_array[l][i]->south_is_open && !small_array[l][i]->west_is_open)
+				{
+					cout << "A" << " ";
+				}
+				if (small_array[l][i]->north_is_open && small_array[l][i]->east_is_open &&
+					!small_array[l][i]->south_is_open && small_array[l][i]->west_is_open)
+				{
+					cout << "B" << " ";
+				}
+				if (small_array[l][i]->north_is_open && !small_array[l][i]->east_is_open &&
+					small_array[l][i]->south_is_open && small_array[l][i]->west_is_open)
+				{
+					cout << "C" << " ";
+				}
+				if (!small_array[l][i]->north_is_open && small_array[l][i]->east_is_open &&
+					small_array[l][i]->south_is_open && small_array[l][i]->west_is_open)
+				{
+					cout << "D" << " ";
+				}
+				if (small_array[l][i]->north_is_open && small_array[l][i]->east_is_open &&
+					small_array[l][i]->south_is_open && small_array[l][i]->west_is_open)
+				{
+					cout << "E" << " ";
+				}
+				if (!small_array[l][i]->north_is_open && !small_array[l][i]->east_is_open &&
+					!small_array[l][i]->south_is_open && !small_array[l][i]->west_is_open)
+				{
+					cout << "broken" << " ";
+				}
+			}
+		}
+		break;
+	case MEDIUM:
+		break;
+	case LARGE:
+		break;
+	case GIANT:
+		break;
+	default:
+		break;
+	}
+	cin.sync();
+	cin.get();
 }

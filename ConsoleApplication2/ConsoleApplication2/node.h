@@ -9,6 +9,7 @@ public:
 	bool south_is_open;
 	bool west_is_open;
 	bool has_been_visited;
+	bool is_in_frontier;
 	int x_coord;
 	int y_coord;
 };
