@@ -57,7 +57,7 @@ void generate_prims(MAZE_SIZE map_size)
 
 	switch (map_size)
 	{
-	case 0: 
+	case SMALL: 
 	{
 		//generate prims maze on small
 		//
@@ -78,16 +78,18 @@ void generate_prims(MAZE_SIZE map_size)
 
 			cout << "location: " << location << endl;
 
-			for (int i = rand() % prims_frontier_maze.size() - 1; i > 0; i++)
+			for (int i = rand() % prims_frontier_maze.size() - 1; i > 0; i--)
 			{
 				prims_holder.push_back(prims_frontier_maze.back());
 				prims_frontier_maze.pop_back();
 				cout << prims_frontier_maze.size() << endl;
 			}
+			cout << "after first for loop" << endl;
 			prims_in_maze.push_back(prims_frontier_maze.back());
 			prims_frontier_maze.pop_back();
 			while (!prims_holder.empty())
 			{
+				cout << prims_holder.size() << endl;
 				prims_frontier_maze.push_back(prims_holder.back());
 				prims_holder.pop_back();
 			}
@@ -97,7 +99,7 @@ void generate_prims(MAZE_SIZE map_size)
 		}
 		break;
 	}
-	case 1:
+	case MEDIUM:
 	{
 		//generate prims maze on med
 		int start_x = rand() % MEDIUM_DIM;
@@ -111,7 +113,7 @@ void generate_prims(MAZE_SIZE map_size)
 		{
 			int location = rand() % prims_frontier_maze.size();
 
-			for (int i = rand() % prims_frontier_maze.size(); i > 0; i++)
+			for (int i = rand() % prims_frontier_maze.size(); i > 0; i--)
 			{
 				prims_holder.push_back(prims_frontier_maze.back());
 				prims_frontier_maze.pop_back();
@@ -129,7 +131,7 @@ void generate_prims(MAZE_SIZE map_size)
 		}
 		break;
 	}
-	case 2:
+	case LARGE:
 	{
 		//generate prims maze on large
 		int start_x = rand() % LARGE_DIM;
@@ -143,7 +145,7 @@ void generate_prims(MAZE_SIZE map_size)
 		{
 			int location = rand() % prims_frontier_maze.size();
 
-			for (int i = rand() % prims_frontier_maze.size(); i > 0; i++)
+			for (int i = rand() % prims_frontier_maze.size(); i > 0; i--)
 			{
 				prims_holder.push_back(prims_frontier_maze.back());
 				prims_frontier_maze.pop_back();
@@ -161,7 +163,7 @@ void generate_prims(MAZE_SIZE map_size)
 		}
 		break;
 	}
-	case 3:
+	case GIANT:
 	{
 		//generate prims on huge
 		int start_x = rand() % HUGE_DIM;
@@ -175,7 +177,7 @@ void generate_prims(MAZE_SIZE map_size)
 		{
 			int location = rand() % prims_frontier_maze.size();
 
-			for (int i = rand() % prims_frontier_maze.size(); i > 0; i++)
+			for (int i = rand() % prims_frontier_maze.size(); i > 0; i--)
 			{
 				prims_holder.push_back(prims_frontier_maze.back());
 				prims_frontier_maze.pop_back();
@@ -202,7 +204,7 @@ void initialize_array(MAZE_SIZE map_size)
 {
 	switch (map_size)
 	{
-	case 0:
+	case SMALL:
 		{
 			for (int i = 0;i < 25; i++)
 				{
@@ -215,7 +217,7 @@ void initialize_array(MAZE_SIZE map_size)
 		}
 		break;
 		
-	case 1:
+	case MEDIUM:
 		{
 			for (int i = 0;i < 100; i++)
 			{
@@ -227,7 +229,7 @@ void initialize_array(MAZE_SIZE map_size)
 		}
 		break;
 
-	case 2:
+	case LARGE:
 		{
 			for (int i = 0;i < 500; i++)
 			{
@@ -237,7 +239,7 @@ void initialize_array(MAZE_SIZE map_size)
 				}
 			}
 		}
-	case 3:
+	case GIANT:
 		{
 			for (int i = 0;i < 1000; i++)
 			{
@@ -260,15 +262,17 @@ void add_neighbors_to_frontier(node* home, MAZE_SIZE size)
 	int current_x = home->x_coord;
 	int current_y = home->y_coord;
 
+	//always adds nodes to frontier list problem may be here
+
 	switch (size)
 	{
-	case 0:
+	case SMALL:
 		if (current_x + 1 < SMALL_WIDTH && small_array[current_x + 1][current_y]->
 			has_been_visited == false)
 			{
 				prims_frontier_maze.push_back(small_array[current_x + 1][current_y]);
 			}
-		if (current_x - 1 < -1 && small_array[current_x - 1][current_y]->
+		if (current_x - 1 > -1 && small_array[current_x - 1][current_y]->
 			has_been_visited == false)
 			{
 				prims_frontier_maze.push_back(small_array[current_x - 1][current_y]);
@@ -278,19 +282,19 @@ void add_neighbors_to_frontier(node* home, MAZE_SIZE size)
 			{
 				prims_frontier_maze.push_back(small_array[current_x][current_y + 1]);
 			}
-		if (current_y - 1 < -1 && small_array[current_x][current_y - 1]->
+		if (current_y - 1 > -1 && small_array[current_x][current_y - 1]->
 			has_been_visited == false)
 			{
 				prims_frontier_maze.push_back(small_array[current_x][current_y - 1]);
 			}
 		break;
-	case 1:
+	case MEDIUM:
 		if (current_x + 1 < MEDIUM_DIM && small_array[current_x + 1][current_y]->
 			has_been_visited == false)
 			{
 				prims_frontier_maze.push_back(small_array[current_x + 1][current_y]);
 			}
-		if (current_x - 1 < -1 && small_array[current_x - 1][current_y]->
+		if (current_x - 1 > -1 && small_array[current_x - 1][current_y]->
 			has_been_visited == false)
 			{
 				prims_frontier_maze.push_back(small_array[current_x - 1][current_y]);
@@ -300,19 +304,19 @@ void add_neighbors_to_frontier(node* home, MAZE_SIZE size)
 			{
 				prims_frontier_maze.push_back(small_array[current_x][current_y + 1]);
 			}
-		if (current_y - 1 < -1 && small_array[current_x][current_y - 1]->
+		if (current_y - 1 > -1 && small_array[current_x][current_y - 1]->
 			has_been_visited == false)
 			{
 				prims_frontier_maze.push_back(small_array[current_x][current_y - 1]);
 			}
 		break;
-	case 2:
+	case LARGE:
 		if (current_x + 1 < LARGE_DIM && small_array[current_x + 1][current_y]->
 			has_been_visited == false)
 			{
 				prims_frontier_maze.push_back(small_array[current_x + 1][current_y]);
 			}
-		if (current_x - 1 < -1 && small_array[current_x - 1][current_y]->
+		if (current_x - 1 > -1 && small_array[current_x - 1][current_y]->
 			has_been_visited == false)
 			{
 				prims_frontier_maze.push_back(small_array[current_x - 1][current_y]);
@@ -322,19 +326,19 @@ void add_neighbors_to_frontier(node* home, MAZE_SIZE size)
 			{
 				prims_frontier_maze.push_back(small_array[current_x][current_y + 1]);
 			}
-		if (current_y - 1 < -1 && small_array[current_x][current_y - 1]->
+		if (current_y - 1 > -1 && small_array[current_x][current_y - 1]->
 			has_been_visited == false)
 			{
 				prims_frontier_maze.push_back(small_array[current_x][current_y - 1]);
 			}
 		break;
-	case 3:
+	case GIANT:
 		if (current_x + 1 < HUGE_DIM && small_array[current_x + 1][current_y]->
 			has_been_visited == false)
 			{
 				prims_frontier_maze.push_back(small_array[current_x + 1][current_y]);
 			}
-		if (current_x - 1 < -1 && small_array[current_x - 1][current_y]->
+		if (current_x - 1 > -1 && small_array[current_x - 1][current_y]->
 			has_been_visited == false)
 			{
 				prims_frontier_maze.push_back(small_array[current_x - 1][current_y]);
@@ -344,7 +348,7 @@ void add_neighbors_to_frontier(node* home, MAZE_SIZE size)
 			{
 				prims_frontier_maze.push_back(small_array[current_x][current_y + 1]);
 			}
-		if (current_y - 1 < -1 && small_array[current_x][current_y - 1]->
+		if (current_y - 1 > -1 && small_array[current_x][current_y - 1]->
 			has_been_visited == false)
 			{
 				prims_frontier_maze.push_back(small_array[current_x][current_y - 1]);
@@ -366,32 +370,38 @@ void check_neighbors(node* home, MAZE_SIZE size)
 	switch (size)
 	{
 	case 0:
+		cout << "case 0" << endl;
 		if (home->x_coord + 1 < SMALL_WIDTH && small_array[home->x_coord + 1][home->y_coord]->
 			has_been_visited == true)
 		{
+			cout << "east visited" << endl;
 			east_visited = true;
 			visited_neighbors++;
 		}
 		if (home->x_coord - 1 < -1 && small_array[home->x_coord - 1][home->y_coord]->
 			has_been_visited == true)
 		{
+			cout << "west visited" << endl;
 			west_visited = true;
 			visited_neighbors++;
 		}
 		if (home->y_coord + 1 < SMALL_HEIGHT && small_array[home->x_coord][home->y_coord + 1]->
 			has_been_visited == true)
 		{
+			cout << "north visited" << endl;
 			north_visited = true;
 			visited_neighbors++;
 		}
 		if (home->y_coord - 1 < -1 && small_array[home->x_coord][home->y_coord - 1]->
 			has_been_visited == true)
 		{
+			cout << "south visited" << endl;
 			south_visited = true;
 			visited_neighbors++;
 		}
 		break;
 	case 1:
+		cout << "case 1" << endl;
 		if (home->x_coord + 1 < MEDIUM_DIM && small_array[home->x_coord + 1][home->y_coord]->
 			has_been_visited == true)
 		{
@@ -418,6 +428,7 @@ void check_neighbors(node* home, MAZE_SIZE size)
 		}
 		break;
 	case 2:
+		cout << "case 2" << endl;
 		if (home->x_coord + 1 < LARGE_DIM && small_array[home->x_coord + 1][home->y_coord]->
 			has_been_visited == true)
 		{
@@ -444,6 +455,7 @@ void check_neighbors(node* home, MAZE_SIZE size)
 		}
 		break;
 	case 3:
+		cout << "case 3" << endl;
 		if (home->x_coord + 1 < HUGE_DIM && small_array[home->x_coord + 1][home->y_coord]->
 			has_been_visited == true)
 		{
@@ -473,33 +485,43 @@ void check_neighbors(node* home, MAZE_SIZE size)
 		break;
 	}
 
+	cout << prims_frontier_maze.size() << endl;
+	cout << visited_neighbors << endl;
+	cin.sync();
+	cin.get();
+
 	if (visited_neighbors == 1)
 	{
 		if (north_visited == true)
 		{
 			home->north_is_open = true;
+			small_array[home->x_coord][home->y_coord + 1]->south_is_open = true;
 		}
 
 		if (east_visited == true)
 		{
 			home->east_is_open = true;
+			small_array[home->x_coord + 1][home->y_coord]->west_is_open = true;
 		}
 
 		if (south_visited == true)
 		{
 			home->south_is_open = true;
+			small_array[home->x_coord][home->y_coord - 1]->north_is_open = true;
 		}
 
 		if (west_visited == true)
 		{
 			home->west_is_open = true;
+			small_array[home->x_coord - 1][home->y_coord]->east_is_open = true;
 		}
 	}
 	else
-	{
+	if(visited_neighbors > 1){
 		while (home->north_is_open == false && home->east_is_open == false && home->south_is_open == false && home->west_is_open == false)
 		{
-		switch (rand() % 4)
+			cout << "while loop" << endl;
+			switch (rand() % 4)
 				{
 				case 0:
 					if (north_visited == true)
