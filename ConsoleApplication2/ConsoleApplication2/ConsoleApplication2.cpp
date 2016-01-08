@@ -51,6 +51,9 @@ int main()
 	generate_prims(SMALL);
 	print_array(SMALL);
 
+	cin.sync();
+	cin.get();
+
     return 0;
 }
 
@@ -73,6 +76,9 @@ void generate_prims(MAZE_SIZE map_size)
 
 		cout << start_x << " " <<start_y << endl;
 		cout << prims_frontier_maze.size() << endl;
+
+		cin.sync();
+		;
 
 
 		while(!prims_frontier_maze.empty())
@@ -385,6 +391,10 @@ void add_neighbors_to_frontier(node* home, MAZE_SIZE size)
 
 void check_neighbors(node* home, MAZE_SIZE size)
 {
+	cout << "inside check neighbors" << endl;
+	cin.sync();
+	;
+
 	bool north_visited = false;
 	bool east_visited = false;
 	bool south_visited = false;
@@ -394,7 +404,6 @@ void check_neighbors(node* home, MAZE_SIZE size)
 	switch (size)
 	{
 	case 0:
-		cout << "case 0" << endl;
 		if (home->x_coord + 1 < SMALL_WIDTH && small_array[home->x_coord + 1][home->y_coord]->
 			has_been_visited == true)
 		{
@@ -512,7 +521,7 @@ void check_neighbors(node* home, MAZE_SIZE size)
 	cout << prims_frontier_maze.size() << endl;
 	cout << visited_neighbors << endl;
 	cin.sync();
-	cin.get();
+	;
 
 	if (visited_neighbors == 1)
 	{
@@ -684,5 +693,5 @@ void print_array(MAZE_SIZE size)
 		break;
 	}
 	cin.sync();
-	cin.get();
+	;
 }

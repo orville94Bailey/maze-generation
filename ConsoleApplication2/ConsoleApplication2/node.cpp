@@ -9,6 +9,7 @@ node::node(int x, int y)
 	south_is_open = false;
 	west_is_open = false;
 	has_been_visited = false;
+	is_in_frontier = false;
 	x_coord = x;
 	y_coord = y;
 }
