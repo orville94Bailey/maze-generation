@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <iostream>
+#include <cassert>
 
 using std::list;
 using std::cout;
@@ -43,6 +44,7 @@ void add_neighbors_to_frontier(node*, MAZE_SIZE);
 void check_neighbors(node*, MAZE_SIZE);
 void initialize_array(MAZE_SIZE);
 void print_array(MAZE_SIZE);
+void check_locations_of_frontier_nodes(MAZE_SIZE);
 
 int main()
 {
@@ -393,7 +395,8 @@ void check_neighbors(node* home, MAZE_SIZE size)
 {
 	cout << "inside check neighbors" << endl;
 	cin.sync();
-	;
+	check_locations_of_frontier_nodes(size);
+	cin.get();
 
 	bool north_visited = false;
 	bool east_visited = false;
@@ -518,10 +521,9 @@ void check_neighbors(node* home, MAZE_SIZE size)
 		break;
 	}
 
-	cout << prims_frontier_maze.size() << endl;
+	cout <<"x: "<< home->x_coord <<" y: "<< home->y_coord << endl;
 	cout << visited_neighbors << endl;
-	cin.sync();
-	;
+	assert(visited_neighbors > 0 && visited_neighbors < 4);
 
 	if (visited_neighbors == 1)
 	{
@@ -694,4 +696,34 @@ void print_array(MAZE_SIZE size)
 	}
 	cin.sync();
 	;
+}
+
+void check_locations_of_frontier_nodes(MAZE_SIZE size)
+{
+	cout << "Begin list of frontier locations" << endl;
+	switch (size)
+	{
+	case SMALL:
+		for (int i = 0; i < SMALL_HEIGHT;i++)
+		{
+			for (int l = 0; l < SMALL_WIDTH; l++)
+			{
+				if (small_array[l][i]->is_in_frontier == true)
+				{
+					cout <<"x:" <<small_array[l][i]->x_coord <<" y: "<< small_array[l][i]->y_coord << endl;
+				}
+				
+			}
+		}
+		break;
+	case MEDIUM:
+		break;
+	case LARGE:
+		break;
+	case GIANT:
+		break;
+	default:
+		break;
+	}
+	cout << "end list of frontier locations" << endl;
 }
