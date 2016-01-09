@@ -54,7 +54,7 @@ int main()
 	print_array(SMALL);
 
 	cin.sync();
-	//cin.get();
+	cin.get();
 
     return 0;
 }
@@ -76,21 +76,19 @@ void generate_prims(MAZE_SIZE map_size)
 		small_array[start_x][start_y]->has_been_visited = true;
 		add_neighbors_to_frontier(small_array[start_x][start_y], map_size);
 
-		cout << "starting coords" << endl;
-		cout << start_x << " " << start_y << endl << endl;;
-
 		while(!prims_frontier_maze.empty())
 		{
-			int location = rand() % prims_frontier_maze.size();
+			int location = rand() % prims_frontier_maze.size() - 1;
 
-			cout << "location: " << location << endl;
+			if (location == -1)
+			{
+				location++;
+			}
 
-			cout << "Prims frontier size: ";
-			for (int i = location; i > -1; i--)
+			for (int i = location; i > 0; i--)
 			{
 				prims_holder.push_back(prims_frontier_maze.back());
 				prims_frontier_maze.pop_back();
-				cout << prims_frontier_maze.size() << endl;
 			}
 
 			prims_in_maze.push_back(prims_frontier_maze.back());
@@ -100,7 +98,6 @@ void generate_prims(MAZE_SIZE map_size)
 
 			while (!prims_holder.empty())
 			{
-				cout << "Prims holder size: " <<prims_holder.size() << endl;
 				prims_frontier_maze.push_back(prims_holder.back());
 				prims_holder.pop_back();
 			}
@@ -392,10 +389,7 @@ void add_neighbors_to_frontier(node* home, MAZE_SIZE size)
 
 void check_neighbors(node* home, MAZE_SIZE size)
 {
-	cout << "inside check neighbors" << endl;
-	cin.sync();
-	check_locations_of_frontier_nodes(size);
-	//cin.get();
+	//check_locations_of_frontier_nodes(size);
 
 	bool north_visited = false;
 	bool east_visited = false;
@@ -409,34 +403,29 @@ void check_neighbors(node* home, MAZE_SIZE size)
 		if (home->x_coord + 1 < SMALL_WIDTH && small_array[home->x_coord + 1][home->y_coord]->
 			has_been_visited == true)
 		{
-			cout << "east visited" << endl;
 			east_visited = true;
 			visited_neighbors++;
 		}
 		if (home->x_coord - 1 > -1 && small_array[home->x_coord - 1][home->y_coord]->
 			has_been_visited == true)
 		{
-			cout << "west visited" << endl;
 			west_visited = true;
 			visited_neighbors++;
 		}
 		if (home->y_coord + 1 < SMALL_HEIGHT && small_array[home->x_coord][home->y_coord + 1]->
 			has_been_visited == true)
 		{
-			cout << "north visited" << endl;
 			north_visited = true;
 			visited_neighbors++;
 		}
 		if (home->y_coord - 1 > -1 && small_array[home->x_coord][home->y_coord - 1]->
 			has_been_visited == true)
 		{
-			cout << "south visited" << endl;
 			south_visited = true;
 			visited_neighbors++;
 		}
 		break;
 	case 1:
-		cout << "case 1" << endl;
 		if (home->x_coord + 1 < MEDIUM_DIM && medium_array[home->x_coord + 1][home->y_coord]->
 			has_been_visited == true)
 		{
@@ -463,7 +452,6 @@ void check_neighbors(node* home, MAZE_SIZE size)
 		}
 		break;
 	case 2:
-		cout << "case 2" << endl;
 		if (home->x_coord + 1 < LARGE_DIM && large_array[home->x_coord + 1][home->y_coord]->
 			has_been_visited == true)
 		{
@@ -490,7 +478,6 @@ void check_neighbors(node* home, MAZE_SIZE size)
 		}
 		break;
 	case 3:
-		cout << "case 3" << endl;
 		if (home->x_coord + 1 < HUGE_DIM && huge_array[home->x_coord + 1][home->y_coord]->
 			has_been_visited == true)
 		{
@@ -520,10 +507,6 @@ void check_neighbors(node* home, MAZE_SIZE size)
 		break;
 	}
 
-	cout << "Coords of home node: ";
-	cout <<"x: "<< home->x_coord <<" y: "<< home->y_coord << endl;
-	cout << "Visited Neighbors: " <<visited_neighbors << "##########################" <<endl;
-	//assert(visited_neighbors > 0 && visited_neighbors < 5);
 
 	if (visited_neighbors == 1)
 	{
@@ -555,7 +538,6 @@ void check_neighbors(node* home, MAZE_SIZE size)
 	if(visited_neighbors > 1){
 		while (home->north_is_open == false && home->east_is_open == false && home->south_is_open == false && home->west_is_open == false)
 		{
-			cout << "while loop" << endl;
 			switch (rand() % 4)
 				{
 				case 0:
@@ -594,7 +576,6 @@ void check_neighbors(node* home, MAZE_SIZE size)
 
 void print_array(MAZE_SIZE size)
 {
-	cout << "inside the print" << endl;
 	switch (size)
 	{
 	case SMALL:
@@ -683,6 +664,7 @@ void print_array(MAZE_SIZE size)
 					cout << "broken" << " ";
 				}
 			}
+			cout << endl;
 		}
 		break;
 	case MEDIUM:
@@ -700,7 +682,6 @@ void print_array(MAZE_SIZE size)
 
 void check_locations_of_frontier_nodes(MAZE_SIZE size)
 {
-	cout << "Begin list of frontier locations" << endl;
 	switch (size)
 	{
 	case SMALL:
