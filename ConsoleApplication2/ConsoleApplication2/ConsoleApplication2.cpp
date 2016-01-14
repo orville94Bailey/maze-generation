@@ -40,6 +40,8 @@ enum MAZE_SIZE
 	GIANT
 };
 
+void deconstruct_maze(MAZE_SIZE size);
+
 void generate_prims(MAZE_SIZE);
 void add_neighbors_to_frontier(node*, MAZE_SIZE);
 void check_neighbors(node*, MAZE_SIZE);
@@ -53,6 +55,12 @@ void generate_dfs_hori(MAZE_SIZE);
 int main()
 {
 	srand(time(NULL));
+	generate_prims(SMALL);
+	print_array(SMALL);
+	cin.sync();
+	cin.get();
+	deconstruct_maze(SMALL);
+	
     return 0;
 }
 
@@ -726,6 +734,11 @@ void generate_dfs_hori(MAZE_SIZE size)
 
 		stack.push(small_array[start_x][start_y]);
 
+		if (check_neighbors_dfs(stack.top()->x_coord, stack.top()->y_coord, size) > 0)
+		{
+
+		}
+
 		break;
 	case MEDIUM:
 		break;
@@ -881,4 +894,49 @@ int check_neighbors_dfs(int x, int y, MAZE_SIZE size)
 	}
 
 	return viable_neighbors;
+}
+
+void deconstruct_maze(MAZE_SIZE size)
+{
+	switch (size)
+	{
+	case SMALL:
+		for (int i = 0; i < SMALL_HEIGHT; i++)
+		{
+			for (int l = 0; l < SMALL_WIDTH; i++)
+			{
+				small_array[l][i]->~node();
+			}
+		}
+		break;
+	case MEDIUM:
+		for (int i = 0; i < MEDIUM_DIM; i++)
+		{
+			for (int l = 0; l < MEDIUM_DIM; i++)
+			{
+				medium_array[l][i]->~node();
+			}
+		}
+		break;
+	case LARGE:
+		for (int i = 0; i < LARGE_DIM; i++)
+		{
+			for (int l = 0; l < LARGE_DIM; i++)
+			{
+				large_array[l][i]->~node();
+			}
+		}
+		break;
+	case GIANT:
+		for (int i = 0; i < HUGE_DIM; i++)
+		{
+			for (int l = 0; l < HUGE_DIM; i++)
+			{
+				huge_array[l][i]->~node();
+			}
+		}
+		break;
+	default:
+		break;
+	}
 }
