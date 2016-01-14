@@ -9,6 +9,7 @@
 #include <time.h>
 #include <iostream>
 #include <cassert>
+#include <stack>
 
 using std::list;
 using std::cout;
@@ -45,17 +46,13 @@ void check_neighbors(node*, MAZE_SIZE);
 void initialize_array(MAZE_SIZE);
 void print_array(MAZE_SIZE);
 void check_locations_of_frontier_nodes(MAZE_SIZE);
+int  check_neighbors_dfs(int x, int y, MAZE_SIZE);
+
+void generate_dfs_hori(MAZE_SIZE);
 
 int main()
 {
 	srand(time(NULL));
-
-	generate_prims(SMALL);
-	print_array(SMALL);
-
-	cin.sync();
-	cin.get();
-
     return 0;
 }
 
@@ -583,85 +580,89 @@ void print_array(MAZE_SIZE size)
 		{
 			for (int l = 0;i < SMALL_WIDTH;i++)
 			{
-				if (small_array[l][i]->north_is_open && !small_array[l][i]->east_is_open &&
-					!small_array[l][i]->south_is_open && !small_array[l][i]->west_is_open )
+				if (small_array[i][l]->north_is_open && !small_array[i][l]->east_is_open &&
+					!small_array[i][l]->south_is_open && !small_array[i][l]->west_is_open )
 				{
-					cout << 1 << " ";
+					cout << 1;
 				}
-				if (!small_array[l][i]->north_is_open && small_array[l][i]->east_is_open &&
-					!small_array[l][i]->south_is_open && !small_array[l][i]->west_is_open)
+				else if (!small_array[i][l]->north_is_open && small_array[i][l]->east_is_open &&
+					!small_array[i][l]->south_is_open && !small_array[i][l]->west_is_open)
 				{
-					cout << 2 << " ";
+					cout << 2;
 				}
-				if (!small_array[l][i]->north_is_open && !small_array[l][i]->east_is_open &&
-					small_array[l][i]->south_is_open && !small_array[l][i]->west_is_open)
+				else if (!small_array[i][l]->north_is_open && !small_array[i][l]->east_is_open &&
+					small_array[i][l]->south_is_open && !small_array[i][l]->west_is_open)
 				{
-					cout << 3 << " ";
+					cout << 3;
 				}
-				if (!small_array[l][i]->north_is_open && !small_array[l][i]->east_is_open &&
-					!small_array[l][i]->south_is_open && small_array[l][i]->west_is_open)
+				else if (!small_array[i][l]->north_is_open && !small_array[i][l]->east_is_open &&
+					!small_array[i][l]->south_is_open && small_array[i][l]->west_is_open)
 				{
-					cout << 4 << " ";
+					cout << 4;
 				}
-				if (small_array[l][i]->north_is_open && small_array[l][i]->east_is_open &&
-					!small_array[l][i]->south_is_open && !small_array[l][i]->west_is_open)
+				else if (small_array[i][l]->north_is_open && small_array[i][l]->east_is_open &&
+					!small_array[i][l]->south_is_open && !small_array[i][l]->west_is_open)
 				{
-					cout << 5 << " ";
+					cout << 5;
 				}
-				if (small_array[l][i]->north_is_open && !small_array[l][i]->east_is_open &&
-					small_array[l][i]->south_is_open && !small_array[l][i]->west_is_open)
+				else if (small_array[i][l]->north_is_open && !small_array[i][l]->east_is_open &&
+					small_array[i][l]->south_is_open && !small_array[i][l]->west_is_open)
 				{
-					cout << 6 << " ";
+					cout << 6;
 				}
-				if (small_array[l][i]->north_is_open && !small_array[l][i]->east_is_open &&
-					!small_array[l][i]->south_is_open && small_array[l][i]->west_is_open)
+				else if (small_array[i][l]->north_is_open && !small_array[i][l]->east_is_open &&
+					!small_array[i][l]->south_is_open && small_array[i][l]->west_is_open)
 				{
-					cout << 7 << " ";
+					cout << 7;
 				}
-				if (!small_array[l][i]->north_is_open && small_array[l][i]->east_is_open &&
-					small_array[l][i]->south_is_open && !small_array[l][i]->west_is_open)
+				else if (!small_array[i][l]->north_is_open && small_array[i][l]->east_is_open &&
+					small_array[i][l]->south_is_open && !small_array[i][l]->west_is_open)
 				{
-					cout << 8 << " ";
+					cout << 8;
 				}
-				if (!small_array[l][i]->north_is_open && small_array[l][i]->east_is_open &&
-					!small_array[l][i]->south_is_open && small_array[l][i]->west_is_open)
+				else if (!small_array[i][l]->north_is_open && small_array[i][l]->east_is_open &&
+					!small_array[i][l]->south_is_open && small_array[i][l]->west_is_open)
 				{
-					cout << 9 << " ";
+					cout << 9;
 				}
-				if (!small_array[l][i]->north_is_open && !small_array[l][i]->east_is_open &&
-					small_array[l][i]->south_is_open && small_array[l][i]->west_is_open)
+				else if (!small_array[i][l]->north_is_open && !small_array[i][l]->east_is_open &&
+					small_array[i][l]->south_is_open && small_array[i][l]->west_is_open)
 				{
-					cout << 0 << " ";
+					cout << 0;
 				}
-				if (small_array[l][i]->north_is_open && small_array[l][i]->east_is_open &&
-					small_array[l][i]->south_is_open && !small_array[l][i]->west_is_open)
+				else if (small_array[i][l]->north_is_open && small_array[i][l]->east_is_open &&
+					small_array[i][l]->south_is_open && !small_array[i][l]->west_is_open)
 				{
-					cout << "A" << " ";
+					cout << "A";
 				}
-				if (small_array[l][i]->north_is_open && small_array[l][i]->east_is_open &&
-					!small_array[l][i]->south_is_open && small_array[l][i]->west_is_open)
+				else if (small_array[i][l]->north_is_open && small_array[i][l]->east_is_open &&
+					!small_array[i][l]->south_is_open && small_array[i][l]->west_is_open)
 				{
-					cout << "B" << " ";
+					cout << "B";
 				}
-				if (small_array[l][i]->north_is_open && !small_array[l][i]->east_is_open &&
-					small_array[l][i]->south_is_open && small_array[l][i]->west_is_open)
+				else if (small_array[i][l]->north_is_open && !small_array[i][l]->east_is_open &&
+					small_array[i][l]->south_is_open && small_array[i][l]->west_is_open)
 				{
-					cout << "C" << " ";
+					cout << "C";
 				}
-				if (!small_array[l][i]->north_is_open && small_array[l][i]->east_is_open &&
-					small_array[l][i]->south_is_open && small_array[l][i]->west_is_open)
+				else if (!small_array[i][l]->north_is_open && small_array[i][l]->east_is_open &&
+					small_array[i][l]->south_is_open && small_array[i][l]->west_is_open)
 				{
-					cout << "D" << " ";
+					cout << "D";
 				}
-				if (small_array[l][i]->north_is_open && small_array[l][i]->east_is_open &&
-					small_array[l][i]->south_is_open && small_array[l][i]->west_is_open)
+				else if (small_array[i][l]->north_is_open && small_array[i][l]->east_is_open &&
+					small_array[i][l]->south_is_open && small_array[i][l]->west_is_open)
 				{
-					cout << "E" << " ";
+					cout << "E";
 				}
-				if (!small_array[l][i]->north_is_open && !small_array[l][i]->east_is_open &&
-					!small_array[l][i]->south_is_open && !small_array[l][i]->west_is_open)
+				else if (!small_array[i][l]->north_is_open && !small_array[i][l]->east_is_open &&
+					!small_array[i][l]->south_is_open && !small_array[i][l]->west_is_open)
 				{
-					cout << "broken" << " ";
+					cout << "broken";
+				}
+				else
+				{
+					cout << " ";
 				}
 			}
 			cout << endl;
@@ -707,4 +708,177 @@ void check_locations_of_frontier_nodes(MAZE_SIZE size)
 		break;
 	}
 	cout << "end list of frontier locations" << endl;
+}
+
+void generate_dfs_hori(MAZE_SIZE size)
+{
+	int start_x,
+		start_y;
+	std::stack<node*> stack;
+
+	switch (size)
+	{
+	case SMALL:
+		start_x = rand() % SMALL_WIDTH;
+		start_y = rand() % SMALL_HEIGHT;
+
+		small_array[start_x][start_y]->has_been_visited = true;
+
+		stack.push(small_array[start_x][start_y]);
+
+		break;
+	case MEDIUM:
+		break;
+	case LARGE:
+		break;
+	case GIANT:
+		break;
+	default:
+		break;
+	}
+}
+
+int check_neighbors_dfs(int x, int y, MAZE_SIZE size)
+{
+	int viable_neighbors = 0;
+
+	switch (size)
+	{
+	case SMALL:
+		if (x + 1 < SMALL_WIDTH)
+		{
+			if (small_array[x + 1][y]->has_been_visited == false)
+			{
+				viable_neighbors++;
+			}
+		}
+
+		if (x - 1 > -1)
+		{
+			if (small_array[x - 1][y]->has_been_visited == false)
+			{
+				viable_neighbors++;
+			}
+		}
+
+		if (y + 1 < SMALL_HEIGHT)
+		{
+			if (small_array[x][y + 1]->has_been_visited == false)
+			{
+				viable_neighbors++;
+			}
+		}
+
+		if (y - 1 > -1)
+		{
+			if (small_array[x][y - 1]->has_been_visited == false)
+			{
+				viable_neighbors++;
+			}
+		}
+		break;
+	case MEDIUM:
+		if (x + 1 < MEDIUM_DIM)
+		{
+			if (medium_array[x + 1][y]->has_been_visited == false)
+			{
+				viable_neighbors++;
+			}
+		}
+
+		if (x - 1 > -1)
+		{
+			if (medium_array[x - 1][y]->has_been_visited == false)
+			{
+				viable_neighbors++;
+			}
+		}
+
+		if (y + 1 < MEDIUM_DIM)
+		{
+			if (medium_array[x][y + 1]->has_been_visited == false)
+			{
+				viable_neighbors++;
+			}
+		}
+
+		if (y - 1 > -1)
+		{
+			if (medium_array[x][y - 1]->has_been_visited == false)
+			{
+				viable_neighbors++;
+			}
+		}
+		break;
+	case LARGE:
+		if (x + 1 < LARGE_DIM)
+		{
+			if (large_array[x + 1][y]->has_been_visited == false)
+			{
+				viable_neighbors++;
+			}
+		}
+
+		if (x - 1 > -1)
+		{
+			if (large_array[x - 1][y]->has_been_visited == false)
+			{
+				viable_neighbors++;
+			}
+		}
+
+		if (y + 1 < LARGE_DIM)
+		{
+			if (large_array[x][y + 1]->has_been_visited == false)
+			{
+				viable_neighbors++;
+			}
+		}
+
+		if (y - 1 > -1)
+		{
+			if (large_array[x][y - 1]->has_been_visited == false)
+			{
+				viable_neighbors++;
+			}
+		}
+		break;
+	case GIANT:
+		if (x + 1 < HUGE_DIM)
+		{
+			if (huge_array[x + 1][y]->has_been_visited == false)
+			{
+				viable_neighbors++;
+			}
+		}
+
+		if (x - 1 > -1)
+		{
+			if (huge_array[x - 1][y]->has_been_visited == false)
+			{
+				viable_neighbors++;
+			}
+		}
+
+		if (y + 1 < HUGE_DIM)
+		{
+			if (huge_array[x][y + 1]->has_been_visited == false)
+			{
+				viable_neighbors++;
+			}
+		}
+
+		if (y - 1 > -1)
+		{
+			if (huge_array[x][y - 1]->has_been_visited == false)
+			{
+				viable_neighbors++;
+			}
+		}
+		break;
+	default:
+		break;
+	}
+
+	return viable_neighbors;
 }
