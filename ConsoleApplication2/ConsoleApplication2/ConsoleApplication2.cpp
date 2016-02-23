@@ -26,6 +26,8 @@ list<node*> prims_in_maze;
 list<node*> prims_frontier_maze;
 list<node*> prims_holder;
 
+std::stack<node*> dfs_tracing_stack;
+
 node* small_array[80][25];
 node* medium_array[100][100];
 node* large_array[500][500];
@@ -48,19 +50,23 @@ void check_neighbors(node*, MAZE_SIZE);
 void initialize_array(MAZE_SIZE);
 void print_array(MAZE_SIZE);
 void check_locations_of_frontier_nodes(MAZE_SIZE);
-int  check_neighbors_dfs(int x, int y, MAZE_SIZE);
+int*  check_neighbors_dfs(int x, int y, MAZE_SIZE);
 
 void generate_dfs_hori(MAZE_SIZE);
 
+
+
 int main()
 {
+
 	srand(time(NULL));
-	generate_prims(SMALL);
+	initialize_array(SMALL);
+	generate_dfs_hori(SMALL, small_array[0][0]);
 	print_array(SMALL);
 	cin.sync();
 	cin.get();
 	deconstruct_maze(SMALL);
-	
+
     return 0;
 }
 
@@ -70,13 +76,13 @@ void generate_prims(MAZE_SIZE map_size)
 
 	switch (map_size)
 	{
-	case SMALL: 
+	case SMALL:
 	{
 		//generate prims maze on small
 		//
 		int start_x = rand() % SMALL_WIDTH;
 		int start_y = rand() % SMALL_HEIGHT;
-		
+
 		prims_in_maze.push_front(small_array[start_x][start_y]);
 		small_array[start_x][start_y]->has_been_visited = true;
 		add_neighbors_to_frontier(small_array[start_x][start_y], map_size);
@@ -109,7 +115,7 @@ void generate_prims(MAZE_SIZE map_size)
 
 			add_neighbors_to_frontier(prims_in_maze.back(), map_size);
 			check_neighbors(prims_in_maze.back() , map_size);
-			
+
 		}
 		break;
 	}
@@ -229,7 +235,7 @@ void initialize_array(MAZE_SIZE map_size)
 				}
 		}
 		break;
-		
+
 	case MEDIUM:
 		{
 			for (int i = 0;i < 100; i++)
@@ -575,7 +581,7 @@ void check_neighbors(node* home, MAZE_SIZE size)
 					break;
 				}
 		}
-		
+
 	}
 }
 
@@ -586,12 +592,12 @@ void print_array(MAZE_SIZE size)
 	case SMALL:
 		for (int i = 0; i < SMALL_HEIGHT;i++)
 		{
-			for (int l = 0;i < SMALL_WIDTH;i++)
+			for (int l = 0;l < SMALL_WIDTH;l++)
 			{
 				if (small_array[i][l]->north_is_open && !small_array[i][l]->east_is_open &&
 					!small_array[i][l]->south_is_open && !small_array[i][l]->west_is_open )
 				{
-					cout << 1;
+					cout<<1;
 				}
 				else if (!small_array[i][l]->north_is_open && small_array[i][l]->east_is_open &&
 					!small_array[i][l]->south_is_open && !small_array[i][l]->west_is_open)
@@ -673,7 +679,6 @@ void print_array(MAZE_SIZE size)
 					cout << " ";
 				}
 			}
-			cout << endl;
 		}
 		break;
 	case MEDIUM:
@@ -685,8 +690,6 @@ void print_array(MAZE_SIZE size)
 	default:
 		break;
 	}
-	cin.sync();
-	;
 }
 
 void check_locations_of_frontier_nodes(MAZE_SIZE size)
@@ -702,7 +705,7 @@ void check_locations_of_frontier_nodes(MAZE_SIZE size)
 				{
 					cout <<"x:" <<small_array[l][i]->x_coord <<" y: "<< small_array[l][i]->y_coord << endl;
 				}
-				
+
 			}
 		}
 		break;
@@ -720,40 +723,117 @@ void check_locations_of_frontier_nodes(MAZE_SIZE size)
 
 void generate_dfs_hori(MAZE_SIZE size)
 {
-	int start_x,
-		start_y;
-	std::stack<node*> stack;
+	int numberOfNodes,
+		numberOfAddedNodes = 0,
+		focusedX,
+		focusedY;
+	int* neighbor_info;
+
+	//stack<node*> dfs_tracing_stack  //Identified here for quick reference
 
 	switch (size)
-	{
-	case SMALL:
-		start_x = rand() % SMALL_WIDTH;
-		start_y = rand() % SMALL_HEIGHT;
-
-		small_array[start_x][start_y]->has_been_visited = true;
-
-		stack.push(small_array[start_x][start_y]);
-
-		if (check_neighbors_dfs(stack.top()->x_coord, stack.top()->y_coord, size) > 0)
 		{
+		case SMALL:
+			numberOfNodes = SMALL_HEIGHT * SMALL_WIDTH;
+			//select random start point
+			focusedX = rand() % SMALL_WIDTH;
+			focusedY = rand() % SMALL_HEIGHT;
+			dfs_tracing_stack.push(small_array[focusedX][focusedY]);
 
+			//loop until the number of nodes in the maze equals the number of nodes in the array
+			while (numberOfAddedNodes != numberOfNodes)
+			{
+				neighbor_info = check_neighbors_dfs(focusedX, focusedY, size);
+				if (neighbor_info[0] >= 1)
+				{
+					//here we will choose which direction to go
+					//our weighting will also be inserted here
+					int north_weight = 2,
+						east_weight = 6,
+						south_weight = 2,
+						west_weight = 6;
+
+					int total_weight = north_weight + east_weight +
+						south_weight + west_weight;
+
+					int determinite_weight,//
+						weighted_direction;//weighted direction will be an integer where 0 <= i < 4
+										   //0 will represent north, then ascending and clockwise i.e. 1 == east	
+
+					determinite_weight = rand() % total_weight;
+
+					for (int i = 0; i < 4;i++)//this for loop is ugly, 4 is the number of directions (choices we have)
+					{
+						if (i == 0)
+						{
+							if (determinite_weight < 2)
+							{
+								weighted_direction = 0;
+								i = 4;//this breaks out of the for loop TEST to see if a break will work here once it's working
+							}
+							else
+							{
+								determinite_weight -= 2;
+							}
+						}
+						else if (i == 1)
+						{
+							if (determinite_weight < 6)
+							{
+								weighted_direction = 1;
+								i = 4;//TEST
+							}
+							else
+							{
+								determinite_weight -= 6;
+							}
+						}
+						else if (i == 2)
+						{
+							if (determinite_weight < 2)
+							{
+								weighted_direction = 2;
+								i = 4;//TEST
+							}
+							else
+							{
+								determinite_weight -= 2;
+							}
+						}
+						else if (i == 3)
+						{
+							if (determinite_weight < 6)
+							{
+								weighted_direction = 3;
+								i = 4;//TEST
+							}
+							else
+							{
+								cout << "BROKEN IN THE WEIGHT RESOLUTION LINE 811 ConsoleApplication2.cpp" << endl;
+							}
+						}
+					}
+				}
+			}
+
+			break;
+		case MEDIUM:
+			break;
+		case LARGE:
+			break;
+		case GIANT:
+			break;
+		default:
+			break;
 		}
-
-		break;
-	case MEDIUM:
-		break;
-	case LARGE:
-		break;
-	case GIANT:
-		break;
-	default:
-		break;
-	}
 }
 
-int check_neighbors_dfs(int x, int y, MAZE_SIZE size)
+int* check_neighbors_dfs(int x, int y, MAZE_SIZE size)
 {
-	int viable_neighbors = 0;
+	int holder[5] = { 0 };
+	//Holder describes how many viable neighbors there are and their locations
+	//holder[0] is the number of neighbors holder[1] is the north position
+	//the other cardinal directions follow in a clockwise manner
 
 	switch (size)
 	{
@@ -762,7 +842,8 @@ int check_neighbors_dfs(int x, int y, MAZE_SIZE size)
 		{
 			if (small_array[x + 1][y]->has_been_visited == false)
 			{
-				viable_neighbors++;
+				holder[0]++;
+				holder[2]++;
 			}
 		}
 
@@ -770,7 +851,8 @@ int check_neighbors_dfs(int x, int y, MAZE_SIZE size)
 		{
 			if (small_array[x - 1][y]->has_been_visited == false)
 			{
-				viable_neighbors++;
+				holder[0]++;
+				holder[4]++;
 			}
 		}
 
@@ -778,7 +860,8 @@ int check_neighbors_dfs(int x, int y, MAZE_SIZE size)
 		{
 			if (small_array[x][y + 1]->has_been_visited == false)
 			{
-				viable_neighbors++;
+				holder[0]++;
+				holder[1]++;
 			}
 		}
 
@@ -786,114 +869,25 @@ int check_neighbors_dfs(int x, int y, MAZE_SIZE size)
 		{
 			if (small_array[x][y - 1]->has_been_visited == false)
 			{
-				viable_neighbors++;
+				holder[0]++;
+				holder[3]++;
 			}
 		}
 		break;
 	case MEDIUM:
-		if (x + 1 < MEDIUM_DIM)
-		{
-			if (medium_array[x + 1][y]->has_been_visited == false)
-			{
-				viable_neighbors++;
-			}
-		}
-
-		if (x - 1 > -1)
-		{
-			if (medium_array[x - 1][y]->has_been_visited == false)
-			{
-				viable_neighbors++;
-			}
-		}
-
-		if (y + 1 < MEDIUM_DIM)
-		{
-			if (medium_array[x][y + 1]->has_been_visited == false)
-			{
-				viable_neighbors++;
-			}
-		}
-
-		if (y - 1 > -1)
-		{
-			if (medium_array[x][y - 1]->has_been_visited == false)
-			{
-				viable_neighbors++;
-			}
-		}
+		
 		break;
 	case LARGE:
-		if (x + 1 < LARGE_DIM)
-		{
-			if (large_array[x + 1][y]->has_been_visited == false)
-			{
-				viable_neighbors++;
-			}
-		}
-
-		if (x - 1 > -1)
-		{
-			if (large_array[x - 1][y]->has_been_visited == false)
-			{
-				viable_neighbors++;
-			}
-		}
-
-		if (y + 1 < LARGE_DIM)
-		{
-			if (large_array[x][y + 1]->has_been_visited == false)
-			{
-				viable_neighbors++;
-			}
-		}
-
-		if (y - 1 > -1)
-		{
-			if (large_array[x][y - 1]->has_been_visited == false)
-			{
-				viable_neighbors++;
-			}
-		}
+		
 		break;
 	case GIANT:
-		if (x + 1 < HUGE_DIM)
-		{
-			if (huge_array[x + 1][y]->has_been_visited == false)
-			{
-				viable_neighbors++;
-			}
-		}
-
-		if (x - 1 > -1)
-		{
-			if (huge_array[x - 1][y]->has_been_visited == false)
-			{
-				viable_neighbors++;
-			}
-		}
-
-		if (y + 1 < HUGE_DIM)
-		{
-			if (huge_array[x][y + 1]->has_been_visited == false)
-			{
-				viable_neighbors++;
-			}
-		}
-
-		if (y - 1 > -1)
-		{
-			if (huge_array[x][y - 1]->has_been_visited == false)
-			{
-				viable_neighbors++;
-			}
-		}
+		
 		break;
 	default:
 		break;
 	}
 
-	return viable_neighbors;
+	return holder;
 }
 
 void deconstruct_maze(MAZE_SIZE size)
@@ -903,7 +897,7 @@ void deconstruct_maze(MAZE_SIZE size)
 	case SMALL:
 		for (int i = 0; i < SMALL_HEIGHT; i++)
 		{
-			for (int l = 0; l < SMALL_WIDTH; i++)
+			for (int l = 0; l < SMALL_WIDTH; l++)
 			{
 				small_array[l][i]->~node();
 			}
