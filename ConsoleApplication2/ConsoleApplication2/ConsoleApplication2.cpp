@@ -61,7 +61,7 @@ int main()
 
 	srand(time(NULL));
 	initialize_array(SMALL);
-	generate_dfs_hori(SMALL, small_array[0][0]);
+	generate_dfs_hori(SMALL);
 	print_array(SMALL);
 	cin.sync();
 	cin.get();
@@ -741,22 +741,41 @@ void generate_dfs_hori(MAZE_SIZE size)
 			dfs_tracing_stack.push(small_array[focusedX][focusedY]);
 
 			//loop until the number of nodes in the maze equals the number of nodes in the array
-			while (numberOfAddedNodes != numberOfNodes)
+			while (dfs_tracing_stack.size() != numberOfNodes)
 			{
-				neighbor_info = check_neighbors_dfs(focusedX, focusedY, size);
+				neighbor_info = check_neighbors_dfs(dfs_tracing_stack.top()->x_coord, dfs_tracing_stack.top()->y_coord, size);
 				if (neighbor_info[0] >= 1)
 				{
 					//here we will choose which direction to go
 					//our weighting will also be inserted here
-					int north_weight = 2,
-						east_weight = 6,
-						south_weight = 2,
+					//weighting will be done dynamically where if a direction is unavailable it will not be able to be chosen
+
+					int north_weight = 0,
+						east_weight = 0,
+						south_weight = 0,
+						west_weight = 0;
+
+					if (neighbor_info[1] == 1)
+					{
+						north_weight = 2;
+					}
+					if (neighbor_info[2] == 1)
+					{
+						east_weight = 6;
+					}
+					if (neighbor_info[3] == 1)
+					{
+						south_weight = 2;
+					}
+					if (neighbor_info[4] == 1)
+					{
 						west_weight = 6;
+					}
 
 					int total_weight = north_weight + east_weight +
 						south_weight + west_weight;
 
-					int determinite_weight,//
+					int determinite_weight,//determinite weight is a number >= 0 && <total weight
 						weighted_direction;//weighted direction will be an integer where 0 <= i < 4
 										   //0 will represent north, then ascending and clockwise i.e. 1 == east	
 
@@ -813,6 +832,39 @@ void generate_dfs_hori(MAZE_SIZE size)
 							}
 						}
 					}
+
+					switch (weighted_direction)
+					{
+					case 0:
+						small_array[focusedX][focusedY]->north_is_open = true;
+						small_array[focusedX][focusedY + 1]->south_is_open = true;
+						dfs_tracing_stack.push(small_array[focusedX][focusedY + 1]);
+						break;
+					case 1:
+						small_array[focusedX][focusedY]->east_is_open = true;
+						small_array[focusedX + 1][focusedY]->west_is_open = true;
+						dfs_tracing_stack.push(small_array[focusedX + 1][focusedY]);
+						break;
+					case 2:
+						small_array[focusedX][focusedY]->south_is_open = true;
+						small_array[focusedX][focusedY - 1]->north_is_open = true;
+						dfs_tracing_stack.push(small_array[focusedX][focusedY - 1]);
+						break;
+					case 3:
+						small_array[focusedX][focusedY]->west_is_open = true;
+						small_array[focusedX - 1][focusedY]->east_is_open = true;
+						dfs_tracing_stack.push(small_array[focusedX - 1][focusedY]);
+						break;
+					default:
+						cout << "BROKEN IN LINE 859 ConsoleApplication2" << endl;
+						break;
+					}//breaks the walls between current node and next node then adds the next node to the traceback stack and sets the focused node to the next node
+
+					delete neighbor_info;
+				}
+				else
+				{
+					dfs_tracing_stack.pop();
 				}
 			}
 
@@ -830,7 +882,11 @@ void generate_dfs_hori(MAZE_SIZE size)
 
 int* check_neighbors_dfs(int x, int y, MAZE_SIZE size)
 {
-	int holder[5] = { 0 };
+	int holder[5];
+	for (int j = 0; j < 5;j++)
+	{
+		holder[j] = 0;
+	}
 	//Holder describes how many viable neighbors there are and their locations
 	//holder[0] is the number of neighbors holder[1] is the north position
 	//the other cardinal directions follow in a clockwise manner
