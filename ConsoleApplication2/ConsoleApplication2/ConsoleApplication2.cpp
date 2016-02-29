@@ -10,11 +10,13 @@
 #include <iostream>
 #include <cassert>
 #include <stack>
+#include <vector>
 
 using std::list;
 using std::cout;
 using std::endl;
 using std::cin;
+using std::vector;
 
 const int SMALL_WIDTH = 80;
 const int SMALL_HEIGHT = 25;
@@ -50,7 +52,7 @@ void check_neighbors(node*, MAZE_SIZE);
 void initialize_array(MAZE_SIZE);
 void print_array(MAZE_SIZE);
 void check_locations_of_frontier_nodes(MAZE_SIZE);
-int*  check_neighbors_dfs(int x, int y, MAZE_SIZE);
+vector<int>  check_neighbors_dfs(int x, int y, MAZE_SIZE);
 
 void generate_dfs_hori(MAZE_SIZE);
 
@@ -647,27 +649,27 @@ void print_array(MAZE_SIZE size)
 				else if (small_array[i][l]->north_is_open && small_array[i][l]->east_is_open &&
 					small_array[i][l]->south_is_open && !small_array[i][l]->west_is_open)
 				{
-					cout << "A";
+					cout << 'A';
 				}
 				else if (small_array[i][l]->north_is_open && small_array[i][l]->east_is_open &&
 					!small_array[i][l]->south_is_open && small_array[i][l]->west_is_open)
 				{
-					cout << "B";
+					cout << 'B';
 				}
 				else if (small_array[i][l]->north_is_open && !small_array[i][l]->east_is_open &&
 					small_array[i][l]->south_is_open && small_array[i][l]->west_is_open)
 				{
-					cout << "C";
+					cout << 'C';
 				}
 				else if (!small_array[i][l]->north_is_open && small_array[i][l]->east_is_open &&
 					small_array[i][l]->south_is_open && small_array[i][l]->west_is_open)
 				{
-					cout << "D";
+					cout << 'D';
 				}
 				else if (small_array[i][l]->north_is_open && small_array[i][l]->east_is_open &&
 					small_array[i][l]->south_is_open && small_array[i][l]->west_is_open)
 				{
-					cout << "E";
+					cout << 'E';
 				}
 				else if (!small_array[i][l]->north_is_open && !small_array[i][l]->east_is_open &&
 					!small_array[i][l]->south_is_open && !small_array[i][l]->west_is_open)
@@ -676,7 +678,7 @@ void print_array(MAZE_SIZE size)
 				}
 				else
 				{
-					cout << " ";
+					cout << ' ';
 				}
 			}
 		}
@@ -727,7 +729,7 @@ void generate_dfs_hori(MAZE_SIZE size)
 		numberOfAddedNodes = 0,
 		focusedX,
 		focusedY;
-	int* neighbor_info;
+	vector<int> neighbor_info;
 
 	//stack<node*> dfs_tracing_stack  //Identified here for quick reference
 
@@ -860,7 +862,7 @@ void generate_dfs_hori(MAZE_SIZE size)
 						break;
 					}//breaks the walls between current node and next node then adds the next node to the traceback stack and sets the focused node to the next node
 
-					delete neighbor_info;
+					neighbor_info.clear();
 				}
 				else
 				{
@@ -880,13 +882,11 @@ void generate_dfs_hori(MAZE_SIZE size)
 		}
 }
 
-int* check_neighbors_dfs(int x, int y, MAZE_SIZE size)
+vector<int> check_neighbors_dfs(int x, int y, MAZE_SIZE size)
 {
-	int holder[5];
-	for (int j = 0; j < 5;j++)
-	{
-		holder[j] = 0;
-	}
+	vector<int> holder(5,0);
+	vector<int>::iterator it = holder.begin();
+
 	//Holder describes how many viable neighbors there are and their locations
 	//holder[0] is the number of neighbors holder[1] is the north position
 	//the other cardinal directions follow in a clockwise manner
