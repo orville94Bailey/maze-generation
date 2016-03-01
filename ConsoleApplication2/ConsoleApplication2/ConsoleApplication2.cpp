@@ -34,7 +34,7 @@ node* small_array[80][25];
 node* medium_array[100][100];
 node* large_array[500][500];
 node* huge_array[1000][1000];
-
+//testing
 
 enum MAZE_SIZE
 {
