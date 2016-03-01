@@ -674,7 +674,7 @@ void print_array(MAZE_SIZE size)
 				else if (!small_array[i][l]->north_is_open && !small_array[i][l]->east_is_open &&
 					!small_array[i][l]->south_is_open && !small_array[i][l]->west_is_open)
 				{
-					cout << "broken";
+					cout << ' ';
 				}
 				else
 				{
@@ -730,6 +730,7 @@ void generate_dfs_hori(MAZE_SIZE size)
 		focusedX,
 		focusedY;
 	vector<int> neighbor_info;
+	list<node*> nodes_in_maze;
 
 	//stack<node*> dfs_tracing_stack  //Identified here for quick reference
 
@@ -741,9 +742,10 @@ void generate_dfs_hori(MAZE_SIZE size)
 			focusedX = rand() % SMALL_WIDTH;
 			focusedY = rand() % SMALL_HEIGHT;
 			dfs_tracing_stack.push(small_array[focusedX][focusedY]);
+			nodes_in_maze.push_back(small_array[focusedX][focusedY]);
 
 			//loop until the number of nodes in the maze equals the number of nodes in the array
-			while (dfs_tracing_stack.size() != numberOfNodes)
+			while (nodes_in_maze.size() != numberOfNodes)
 			{
 				neighbor_info = check_neighbors_dfs(dfs_tracing_stack.top()->x_coord, dfs_tracing_stack.top()->y_coord, size);
 				if (neighbor_info[0] >= 1)
@@ -841,27 +843,33 @@ void generate_dfs_hori(MAZE_SIZE size)
 						small_array[focusedX][focusedY]->north_is_open = true;
 						small_array[focusedX][focusedY + 1]->south_is_open = true;
 						dfs_tracing_stack.push(small_array[focusedX][focusedY + 1]);
+						focusedY++;
 						break;
 					case 1:
 						small_array[focusedX][focusedY]->east_is_open = true;
 						small_array[focusedX + 1][focusedY]->west_is_open = true;
 						dfs_tracing_stack.push(small_array[focusedX + 1][focusedY]);
+						focusedX++;
 						break;
 					case 2:
 						small_array[focusedX][focusedY]->south_is_open = true;
 						small_array[focusedX][focusedY - 1]->north_is_open = true;
 						dfs_tracing_stack.push(small_array[focusedX][focusedY - 1]);
+						focusedY--;
 						break;
 					case 3:
 						small_array[focusedX][focusedY]->west_is_open = true;
 						small_array[focusedX - 1][focusedY]->east_is_open = true;
 						dfs_tracing_stack.push(small_array[focusedX - 1][focusedY]);
+						focusedX--;
 						break;
 					default:
 						cout << "BROKEN IN LINE 859 ConsoleApplication2" << endl;
 						break;
 					}//breaks the walls between current node and next node then adds the next node to the traceback stack and sets the focused node to the next node
 
+					nodes_in_maze.push_back(small_array[focusedX][focusedY]);
+					dfs_tracing_stack.push(small_array[focusedX][focusedY]);		//changing the values of focused x and y was done in the switch statement above.
 					neighbor_info.clear();
 				}
 				else
@@ -942,7 +950,15 @@ vector<int> check_neighbors_dfs(int x, int y, MAZE_SIZE size)
 	default:
 		break;
 	}
-
+/*       Used to see how the neighbors of the cell
+	for (vector<int>::const_iterator it = holder.begin();
+	it != holder.end(); it++)
+	{
+		cout << *it << endl;
+	}
+	cin.sync();
+	cin.get();
+	*/
 	return holder;
 }
 
