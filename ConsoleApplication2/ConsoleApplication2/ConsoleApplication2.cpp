@@ -743,6 +743,7 @@ void generate_dfs_hori(MAZE_SIZE size)
 			focusedY = rand() % SMALL_HEIGHT;
 			dfs_tracing_stack.push(small_array[focusedX][focusedY]);
 			nodes_in_maze.push_back(small_array[focusedX][focusedY]);
+			small_array[focusedX][focusedY]->has_been_visited = true;
 
 			//loop until the number of nodes in the maze equals the number of nodes in the array
 			while (nodes_in_maze.size() != numberOfNodes)
@@ -789,43 +790,43 @@ void generate_dfs_hori(MAZE_SIZE size)
 					{
 						if (i == 0)
 						{
-							if (determinite_weight < 2)
+							if (determinite_weight < north_weight)
 							{
 								weighted_direction = 0;
 								i = 4;//this breaks out of the for loop TEST to see if a break will work here once it's working
 							}
 							else
 							{
-								determinite_weight -= 2;
+								determinite_weight -= north_weight;
 							}
 						}
 						else if (i == 1)
 						{
-							if (determinite_weight < 6)
+							if (determinite_weight < east_weight)
 							{
 								weighted_direction = 1;
 								i = 4;//TEST
 							}
 							else
 							{
-								determinite_weight -= 6;
+								determinite_weight -= east_weight;
 							}
 						}
 						else if (i == 2)
 						{
-							if (determinite_weight < 2)
+							if (determinite_weight < south_weight)
 							{
 								weighted_direction = 2;
 								i = 4;//TEST
 							}
 							else
 							{
-								determinite_weight -= 2;
+								determinite_weight -= south_weight;
 							}
 						}
 						else if (i == 3)
 						{
-							if (determinite_weight < 6)
+							if (determinite_weight < west_weight)
 							{
 								weighted_direction = 3;
 								i = 4;//TEST
@@ -842,25 +843,21 @@ void generate_dfs_hori(MAZE_SIZE size)
 					case 0:
 						small_array[focusedX][focusedY]->north_is_open = true;
 						small_array[focusedX][focusedY + 1]->south_is_open = true;
-						dfs_tracing_stack.push(small_array[focusedX][focusedY + 1]);
 						focusedY++;
 						break;
 					case 1:
 						small_array[focusedX][focusedY]->east_is_open = true;
 						small_array[focusedX + 1][focusedY]->west_is_open = true;
-						dfs_tracing_stack.push(small_array[focusedX + 1][focusedY]);
 						focusedX++;
 						break;
 					case 2:
 						small_array[focusedX][focusedY]->south_is_open = true;
 						small_array[focusedX][focusedY - 1]->north_is_open = true;
-						dfs_tracing_stack.push(small_array[focusedX][focusedY - 1]);
 						focusedY--;
 						break;
 					case 3:
 						small_array[focusedX][focusedY]->west_is_open = true;
 						small_array[focusedX - 1][focusedY]->east_is_open = true;
-						dfs_tracing_stack.push(small_array[focusedX - 1][focusedY]);
 						focusedX--;
 						break;
 					default:
@@ -868,6 +865,7 @@ void generate_dfs_hori(MAZE_SIZE size)
 						break;
 					}//breaks the walls between current node and next node then adds the next node to the traceback stack and sets the focused node to the next node
 
+					small_array[focusedX][focusedY]->has_been_visited = true;
 					nodes_in_maze.push_back(small_array[focusedX][focusedY]);
 					dfs_tracing_stack.push(small_array[focusedX][focusedY]);		//changing the values of focused x and y was done in the switch statement above.
 					neighbor_info.clear();
