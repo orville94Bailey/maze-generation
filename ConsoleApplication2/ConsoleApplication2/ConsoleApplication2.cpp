@@ -30,7 +30,7 @@ list<node*> prims_holder;
 
 std::stack<node*> dfs_tracing_stack;
 
-node* small_array[80][25];
+node* small_array[25][80];
 node* medium_array[100][100];
 node* large_array[500][500];
 node* huge_array[1000][1000];
@@ -43,6 +43,11 @@ enum MAZE_SIZE
 	LARGE,
 	GIANT
 };
+enum BIAS_DIRECTION 
+{
+	HORIZONTAL,
+	VERTICAL
+};
 
 void deconstruct_maze(MAZE_SIZE size);
 
@@ -53,6 +58,7 @@ void initialize_array(MAZE_SIZE);
 void print_array(MAZE_SIZE);
 void check_locations_of_frontier_nodes(MAZE_SIZE);
 vector<int>  check_neighbors_dfs(int x, int y, MAZE_SIZE);
+int neighbor_info_to_direction(vector<int>, BIAS_DIRECTION);
 
 void generate_dfs_hori(MAZE_SIZE);
 
@@ -592,9 +598,9 @@ void print_array(MAZE_SIZE size)
 	switch (size)
 	{
 	case SMALL:
-		for (int i = 0; i < SMALL_HEIGHT;i++)
+		for (int i = 0; i < SMALL_WIDTH;i++)
 		{
-			for (int l = 0;l < SMALL_WIDTH;l++)
+			for (int l = 0;l < SMALL_HEIGHT;l++)
 			{
 				if (small_array[i][l]->north_is_open && !small_array[i][l]->east_is_open &&
 					!small_array[i][l]->south_is_open && !small_array[i][l]->west_is_open )
@@ -725,173 +731,102 @@ void check_locations_of_frontier_nodes(MAZE_SIZE size)
 
 void generate_dfs_hori(MAZE_SIZE size)
 {
-	int numberOfNodes,
-		numberOfAddedNodes = 0,
-		focusedX,
-		focusedY;
-	vector<int> neighbor_info;
-	list<node*> nodes_in_maze;
 
-	//stack<node*> dfs_tracing_stack  //Identified here for quick reference
+	int visited_cells = 0;
+	vector<int> neighbor_info;
+	int direction;
+	int focused_x,
+		focused_y;
+	int total_cells;
 
 	switch (size)
+	{
+	case SMALL:
+		
+		total_cells = SMALL_HEIGHT * SMALL_WIDTH;
+
+		//select start point at random
+		focused_x = rand() % SMALL_WIDTH;
+		focused_y = rand() % SMALL_HEIGHT;
+
+		//set visited cells to 1
+		visited_cells = 1;
+
+		//while visited cells < total cells
+		while (visited_cells < total_cells)
 		{
-		case SMALL:
-			numberOfNodes = SMALL_HEIGHT * SMALL_WIDTH;
-			//select random start point
-			focusedX = rand() % SMALL_WIDTH;
-			focusedY = rand() % SMALL_HEIGHT;
-			dfs_tracing_stack.push(small_array[focusedX][focusedY]);
-			nodes_in_maze.push_back(small_array[focusedX][focusedY]);
-			small_array[focusedX][focusedY]->has_been_visited = true;
-
-			//loop until the number of nodes in the maze equals the number of nodes in the array
-			while (nodes_in_maze.size() != numberOfNodes)
+			//small_array[focused_x][focused_y]->has_been_visited = true;
+			dfs_tracing_stack.push(small_array[focused_x][focused_y]);
+			neighbor_info = check_neighbors_dfs(focused_x, focused_y, size);
+			//if 1 or more viable neighbors
+			if (neighbor_info[0]>0)
 			{
-				neighbor_info = check_neighbors_dfs(dfs_tracing_stack.top()->x_coord, dfs_tracing_stack.top()->y_coord, size);
-				if (neighbor_info[0] >= 1)
+				//pick weighted direction
+				direction = neighbor_info_to_direction(neighbor_info, HORIZONTAL);
+
+				/*NOTES: What I'm thinking here is a call to a function that takes a vector<int> of size 5 
+					and returns an int between 0 and 3, corresponding to directions.  this function will choose 
+					the direction with a weighted random method so that I can customize the weighted directions*/
+
+				//remove walls between the cells
+				switch (direction)
 				{
-					//here we will choose which direction to go
-					//our weighting will also be inserted here
-					//weighting will be done dynamically where if a direction is unavailable it will not be able to be chosen
+				case 0:
+					small_array[focused_x][focused_y]->north_is_open = true;
+					small_array[focused_x][focused_y + 1]->south_is_open = true;
+					focused_y++;
+					break;
+				case 1:
+					small_array[focused_x][focused_y]->east_is_open = true;
+					small_array[focused_x + 1][focused_y]->west_is_open = true;
+					focused_x++;
+					break;
+				case 2:
+					small_array[focused_x][focused_y]->south_is_open = true;
+					small_array[focused_x][focused_y - 1]->north_is_open = true;
+					focused_y--;
+					break;
+				case 3:
+					small_array[focused_x][focused_y]->west_is_open = true;
+					small_array[focused_x - 1][focused_y]->east_is_open = true;
+					focused_x--;
+					break;
 
-					int north_weight = 0,
-						east_weight = 0,
-						south_weight = 0,
-						west_weight = 0;
-
-					if (neighbor_info[1] == 1)
-					{
-						north_weight = 2;
-					}
-					if (neighbor_info[2] == 1)
-					{
-						east_weight = 6;
-					}
-					if (neighbor_info[3] == 1)
-					{
-						south_weight = 2;
-					}
-					if (neighbor_info[4] == 1)
-					{
-						west_weight = 6;
-					}
-
-					int total_weight = north_weight + east_weight +
-						south_weight + west_weight;
-
-					int determinite_weight,//determinite weight is a number >= 0 && <total weight
-						weighted_direction;//weighted direction will be an integer where 0 <= i < 4
-										   //0 will represent north, then ascending and clockwise i.e. 1 == east	
-
-					determinite_weight = rand() % total_weight;
-
-					for (int i = 0; i < 4;i++)//this for loop is ugly, 4 is the number of directions (choices we have)
-					{
-						if (i == 0)
-						{
-							if (determinite_weight < north_weight)
-							{
-								weighted_direction = 0;
-								i = 4;//this breaks out of the for loop TEST to see if a break will work here once it's working
-							}
-							else
-							{
-								determinite_weight -= north_weight;
-							}
-						}
-						else if (i == 1)
-						{
-							if (determinite_weight < east_weight)
-							{
-								weighted_direction = 1;
-								i = 4;//TEST
-							}
-							else
-							{
-								determinite_weight -= east_weight;
-							}
-						}
-						else if (i == 2)
-						{
-							if (determinite_weight < south_weight)
-							{
-								weighted_direction = 2;
-								i = 4;//TEST
-							}
-							else
-							{
-								determinite_weight -= south_weight;
-							}
-						}
-						else if (i == 3)
-						{
-							if (determinite_weight < west_weight)
-							{
-								weighted_direction = 3;
-								i = 4;//TEST
-							}
-							else
-							{
-								cout << "BROKEN IN THE WEIGHT RESOLUTION LINE 811 ConsoleApplication2.cpp" << endl;
-							}
-						}
-					}
-
-					switch (weighted_direction)
-					{
-					case 0:
-						small_array[focusedX][focusedY]->north_is_open = true;
-						small_array[focusedX][focusedY + 1]->south_is_open = true;
-						focusedY++;
-						break;
-					case 1:
-						small_array[focusedX][focusedY]->east_is_open = true;
-						small_array[focusedX + 1][focusedY]->west_is_open = true;
-						focusedX++;
-						break;
-					case 2:
-						small_array[focusedX][focusedY]->south_is_open = true;
-						small_array[focusedX][focusedY - 1]->north_is_open = true;
-						focusedY--;
-						break;
-					case 3:
-						small_array[focusedX][focusedY]->west_is_open = true;
-						small_array[focusedX - 1][focusedY]->east_is_open = true;
-						focusedX--;
-						break;
-					default:
-						cout << "BROKEN IN LINE 859 ConsoleApplication2" << endl;
-						break;
-					}//breaks the walls between current node and next node then adds the next node to the traceback stack and sets the focused node to the next node
-
-					small_array[focusedX][focusedY]->has_been_visited = true;
-					nodes_in_maze.push_back(small_array[focusedX][focusedY]);
-					dfs_tracing_stack.push(small_array[focusedX][focusedY]);		//changing the values of focused x and y was done in the switch statement above.
-					neighbor_info.clear();
+				default:
+					break;
 				}
-				else
-				{
-					dfs_tracing_stack.pop();
-				}
+				//make the chosen cell the current cell
+				//incriment cells visited
+				visited_cells++;
 			}
-
-			break;
-		case MEDIUM:
-			break;
-		case LARGE:
-			break;
-		case GIANT:
-			break;
-		default:
-			break;
+			else
+			{
+				focused_x = dfs_tracing_stack.top()->x_coord;
+				focused_y = dfs_tracing_stack.top()->y_coord;
+				dfs_tracing_stack.pop();
+			}
+			//else
+				//set current cell to previous cell
 		}
+
+		break;
+	case MEDIUM:
+		break;
+	case LARGE:
+		break;
+	case GIANT:
+		break;
+	default:
+		break;
+	}
+	
+
+
 }
 
 vector<int> check_neighbors_dfs(int x, int y, MAZE_SIZE size)
 {
 	vector<int> holder(5,0);
-	vector<int>::iterator it = holder.begin();
 
 	//Holder describes how many viable neighbors there are and their locations
 	//holder[0] is the number of neighbors holder[1] is the north position
@@ -900,9 +835,9 @@ vector<int> check_neighbors_dfs(int x, int y, MAZE_SIZE size)
 	switch (size)
 	{
 	case SMALL:
-		if (x + 1 < SMALL_WIDTH)
+		if (x + 1 < SMALL_HEIGHT)
 		{
-			if (small_array[x + 1][y]->has_been_visited == false)
+			if (small_array[y][x+1]->has_been_visited == false)
 			{
 				holder[0]++;
 				holder[2]++;
@@ -911,16 +846,16 @@ vector<int> check_neighbors_dfs(int x, int y, MAZE_SIZE size)
 
 		if (x - 1 > -1)
 		{
-			if (small_array[x - 1][y]->has_been_visited == false)
+			if (small_array[y][x-1]->has_been_visited == false)
 			{
 				holder[0]++;
 				holder[4]++;
 			}
 		}
 
-		if (y + 1 < SMALL_HEIGHT)
+		if (y + 1 < SMALL_WIDTH)
 		{
-			if (small_array[x][y + 1]->has_been_visited == false)
+			if (small_array[y+1][x]->has_been_visited == false)
 			{
 				holder[0]++;
 				holder[1]++;
@@ -929,7 +864,7 @@ vector<int> check_neighbors_dfs(int x, int y, MAZE_SIZE size)
 
 		if (y - 1 > -1)
 		{
-			if (small_array[x][y - 1]->has_been_visited == false)
+			if (small_array[y-1][x]->has_been_visited == false)
 			{
 				holder[0]++;
 				holder[3]++;
@@ -958,6 +893,97 @@ vector<int> check_neighbors_dfs(int x, int y, MAZE_SIZE size)
 	cin.get();
 	*/
 	return holder;
+}
+
+int neighbor_info_to_direction(vector<int> neighbor_info, BIAS_DIRECTION dir)
+{
+	int north_weight = 0,
+		east_weight = 0,
+		south_weight = 0,
+		west_weight = 0;
+
+	switch (dir)
+	{
+	case HORIZONTAL:
+		if (neighbor_info[1] == 1)
+		{
+			north_weight = 1;
+		}
+		if (neighbor_info[2] == 1)
+		{
+			east_weight = 3;
+		}
+		if (neighbor_info[3] == 1)
+		{
+			south_weight = 1;
+		}
+		if (neighbor_info[4] == 1)
+		{
+			west_weight = 3;
+		}
+		break;
+	case VERTICAL:
+		if (neighbor_info[1] == 1)
+		{
+			north_weight = 3;
+		}
+		if (neighbor_info[2] == 1)
+		{
+			east_weight = 1;
+		}
+		if (neighbor_info[3] == 1)
+		{
+			south_weight = 3;
+		}
+		if (neighbor_info[4] == 1)
+		{
+			west_weight = 1;
+		}
+		break;
+	default:
+		break;
+	}
+
+	int total_weight = north_weight + east_weight + south_weight + west_weight;
+
+	int rand_weight = rand() % total_weight;
+
+	if (rand_weight < north_weight)
+	{
+		return 0;
+	}
+	else
+	{
+		rand_weight -= north_weight;
+	}
+
+	if (rand_weight < east_weight)
+	{
+		return 1;
+	}
+	else
+	{
+		rand_weight -= east_weight;
+	}
+
+	if (rand_weight < south_weight)
+	{
+		return 2;
+	}
+	else
+	{
+		rand_weight -= south_weight;
+	}
+
+	if (rand_weight < west_weight)
+	{
+		return 3;
+	}
+	else
+	{
+		cout << "You have messed up greatly" << endl;
+		return -1;
+	}
 }
 
 void deconstruct_maze(MAZE_SIZE size)
