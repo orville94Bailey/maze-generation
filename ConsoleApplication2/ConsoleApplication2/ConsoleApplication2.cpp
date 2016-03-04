@@ -598,9 +598,9 @@ void print_array(MAZE_SIZE size)
 	switch (size)
 	{
 	case SMALL:
-		for (int i = 0; i < SMALL_WIDTH;i++)
+		for (int l = 0;l < SMALL_HEIGHT;l++)
 		{
-			for (int l = 0;l < SMALL_HEIGHT;l++)
+			for (int i = 0; i < SMALL_WIDTH;i++)
 			{
 				if (small_array[i][l]->north_is_open && !small_array[i][l]->east_is_open &&
 					!small_array[i][l]->south_is_open && !small_array[i][l]->west_is_open )
@@ -755,9 +755,19 @@ void generate_dfs_hori(MAZE_SIZE size)
 		//while visited cells < total cells
 		while (visited_cells < total_cells)
 		{
-			//small_array[focused_x][focused_y]->has_been_visited = true;
+			small_array[focused_x][focused_y]->has_been_visited = true;
 			dfs_tracing_stack.push(small_array[focused_x][focused_y]);
+
+			cin.sync();
+			cin.get();
+			
 			neighbor_info = check_neighbors_dfs(focused_x, focused_y, size);
+			for (int j = 0; j < 5;j++)
+			{
+				cout << neighbor_info[j] << ", ";
+			}
+			cout << dfs_tracing_stack.size();
+			cout << endl;
 			//if 1 or more viable neighbors
 			if (neighbor_info[0]>0)
 			{
@@ -835,9 +845,9 @@ vector<int> check_neighbors_dfs(int x, int y, MAZE_SIZE size)
 	switch (size)
 	{
 	case SMALL:
-		if (x + 1 < SMALL_HEIGHT)
+		if (x + 1 < SMALL_WIDTH)
 		{
-			if (small_array[y][x+1]->has_been_visited == false)
+			if (small_array[x+1][y]->has_been_visited == false)
 			{
 				holder[0]++;
 				holder[2]++;
@@ -846,16 +856,16 @@ vector<int> check_neighbors_dfs(int x, int y, MAZE_SIZE size)
 
 		if (x - 1 > -1)
 		{
-			if (small_array[y][x-1]->has_been_visited == false)
+			if (small_array[x-1][y]->has_been_visited == false)
 			{
 				holder[0]++;
 				holder[4]++;
 			}
 		}
 
-		if (y + 1 < SMALL_WIDTH)
+		if (y + 1 < SMALL_HEIGHT)
 		{
-			if (small_array[y+1][x]->has_been_visited == false)
+			if (small_array[x][y+1]->has_been_visited == false)
 			{
 				holder[0]++;
 				holder[1]++;
@@ -864,7 +874,7 @@ vector<int> check_neighbors_dfs(int x, int y, MAZE_SIZE size)
 
 		if (y - 1 > -1)
 		{
-			if (small_array[y-1][x]->has_been_visited == false)
+			if (small_array[x][y-1]->has_been_visited == false)
 			{
 				holder[0]++;
 				holder[3]++;

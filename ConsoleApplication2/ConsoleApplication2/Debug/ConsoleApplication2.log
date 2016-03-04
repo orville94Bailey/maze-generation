@@ -1,1 +1,3 @@
-﻿  ConsoleApplication2.vcxproj -> C:\Users\Deana\Documents\GitHub\maze-generation\ConsoleApplication2\Debug\ConsoleApplication2.exe
+﻿  ConsoleApplication2.cpp
+c:\users\deana\documents\github\maze-generation\consoleapplication2\consoleapplication2\consoleapplication2.cpp(70): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  ConsoleApplication2.vcxproj -> C:\Users\Deana\Documents\GitHub\maze-generation\ConsoleApplication2\Debug\ConsoleApplication2.exe
