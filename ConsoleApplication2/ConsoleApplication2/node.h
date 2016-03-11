@@ -10,6 +10,8 @@ public:
 	bool west_is_open;
 	bool has_been_visited;
 	bool is_in_frontier;
+	float f;
+	int g;
 	int x_coord;
 	int y_coord;
 };

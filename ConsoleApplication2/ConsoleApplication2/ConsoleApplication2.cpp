@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <iostream>
-#include <cassert>
 #include <stack>
 #include <vector>
 
@@ -36,6 +35,23 @@ node* large_array[500][500];
 node* huge_array[1000][1000];
 //testing
 
+struct pathing_structure {
+	node* parent = NULL;
+	node* child = NULL;
+	pathing_structure(node* child_pointer)
+	{
+		child = child_pointer;
+	}
+	void set_parent_node(node* parent_pointer)
+	{
+		parent = parent_pointer;
+	}
+
+};
+
+list<pathing_structure*> closed_pathfinding;
+list<pathing_structure*> open_pathfinding;
+
 enum MAZE_SIZE
 {
 	SMALL,
@@ -60,7 +76,13 @@ void check_locations_of_frontier_nodes(MAZE_SIZE);
 vector<int>  check_neighbors_dfs(int x, int y, MAZE_SIZE);
 int neighbor_info_to_direction(vector<int>, BIAS_DIRECTION);
 
-void generate_dfs_hori(MAZE_SIZE);
+void generate_dfs(MAZE_SIZE,BIAS_DIRECTION);
+
+vector<node*> generate_path(node* start, node* goal, MAZE_SIZE size);
+vector<node*> make_path(pathing_structure*);
+float heuristic_pathfinding(int node_x, int node_y, MAZE_SIZE size);
+vector<node*> get_neighbors_pathfinding(node*);
+bool list_sort_pathfinding(const pathing_structure * a, const pathing_structure * b);
 
 
 
@@ -69,11 +91,11 @@ int main()
 
 	srand(time(NULL));
 	initialize_array(SMALL);
-	generate_dfs_hori(SMALL);
+	generate_dfs(SMALL, VERTICAL);
 	print_array(SMALL);
+	deconstruct_maze(SMALL);
 	cin.sync();
 	cin.get();
-	deconstruct_maze(SMALL);
 
     return 0;
 }
@@ -729,7 +751,7 @@ void check_locations_of_frontier_nodes(MAZE_SIZE size)
 	cout << "end list of frontier locations" << endl;
 }
 
-void generate_dfs_hori(MAZE_SIZE size)
+void generate_dfs(MAZE_SIZE size, BIAS_DIRECTION dir)
 {
 
 	int visited_cells = 0;
@@ -752,27 +774,28 @@ void generate_dfs_hori(MAZE_SIZE size)
 		//set visited cells to 1
 		visited_cells = 1;
 
-		//while visited cells < total cells
+		//while visited cells < total cells         Keeps loop running until all cells have been visited
 		while (visited_cells < total_cells)
 		{
-			small_array[focused_x][focused_y]->has_been_visited = true;
-			dfs_tracing_stack.push(small_array[focused_x][focused_y]);
-
+			/*
 			cin.sync();
 			cin.get();
+			print_array(SMALL);
+			*/
+
+			if (small_array[focused_x][focused_y]->has_been_visited == false)
+			{
+				dfs_tracing_stack.push(small_array[focused_x][focused_y]);
+			}
+			small_array[focused_x][focused_y]->has_been_visited = true;
 			
 			neighbor_info = check_neighbors_dfs(focused_x, focused_y, size);
-			for (int j = 0; j < 5;j++)
-			{
-				cout << neighbor_info[j] << ", ";
-			}
-			cout << dfs_tracing_stack.size();
-			cout << endl;
+			
 			//if 1 or more viable neighbors
 			if (neighbor_info[0]>0)
 			{
 				//pick weighted direction
-				direction = neighbor_info_to_direction(neighbor_info, HORIZONTAL);
+				direction = neighbor_info_to_direction(neighbor_info, dir);
 
 				/*NOTES: What I'm thinking here is a call to a function that takes a vector<int> of size 5 
 					and returns an int between 0 and 3, corresponding to directions.  this function will choose 
@@ -783,8 +806,8 @@ void generate_dfs_hori(MAZE_SIZE size)
 				{
 				case 0:
 					small_array[focused_x][focused_y]->north_is_open = true;
-					small_array[focused_x][focused_y + 1]->south_is_open = true;
-					focused_y++;
+					small_array[focused_x][focused_y - 1]->south_is_open = true;
+					focused_y--;
 					break;
 				case 1:
 					small_array[focused_x][focused_y]->east_is_open = true;
@@ -793,8 +816,8 @@ void generate_dfs_hori(MAZE_SIZE size)
 					break;
 				case 2:
 					small_array[focused_x][focused_y]->south_is_open = true;
-					small_array[focused_x][focused_y - 1]->north_is_open = true;
-					focused_y--;
+					small_array[focused_x][focused_y + 1]->north_is_open = true;
+					focused_y++;
 					break;
 				case 3:
 					small_array[focused_x][focused_y]->west_is_open = true;
@@ -834,6 +857,102 @@ void generate_dfs_hori(MAZE_SIZE size)
 
 }
 
+vector<node*> generate_path(node * start, node * goal, MAZE_SIZE size)
+{
+	vector<node *> holder(4,NULL);
+	pathing_structure* parent = NULL;
+	pathing_structure* child = NULL;
+	vector<pathing_structure>::iterator it;
+
+	switch (size)
+	{
+	case SMALL:
+		//push start onto the open list
+		start->g = 0;
+		start->f = start->g + heuristic_pathfinding(start->x_coord, start->y_coord, size);
+		open_pathfinding.push_back(new pathing_structure(start));
+			//set closed list to empty
+		closed_pathfinding.clear();
+			//while open is not empty
+		while (open_pathfinding.size()>0)
+		{
+			//sort open on node.f
+			open_pathfinding.sort(list_sort_pathfinding);
+			//take node with smallest f
+			parent = open_pathfinding.front();
+			open_pathfinding.pop_front();
+			//make a vector of node's kids
+			holder = get_neighbors_pathfinding(parent->child);
+			//for each kid
+			for (it = holder.begin; it != holder.end; it++)
+			{
+
+			}
+			//kid.f = parent.g + 1 + heuristic(kid)
+			//if kid == goal makepath on kid
+			//if kid not in closed list push onto open list
+			//push grabbed node onto closed list
+		}
+			
+		break;
+	case MEDIUM:
+		break;
+	case LARGE:
+		break;
+	case GIANT:
+		break;
+	default:
+		break;
+	}
+	
+	return vector<node*>();
+}
+
+float heuristic_pathfinding(int node_x, int node_y, MAZE_SIZE size)
+{
+	switch (size)
+	{
+	case SMALL:
+		return std::sqrtf(((79 - node_x)*(79 - node_x)) + ((24 - node_y)*(24 - node_y)));
+		break;
+	case MEDIUM:
+		break;
+	case LARGE:
+		break;
+	case GIANT:
+		break;
+	default:
+		break;
+	}
+}
+
+vector<node*> get_neighbors_pathfinding(node* _node)
+{
+	vector<node*> holder(4,NULL);
+	if (_node->north_is_open == true)
+	{
+		holder[0] = small_array[_node->x_coord][_node->y_coord + 1];
+	}
+	if (_node->east_is_open == true)
+	{
+		holder[1] = small_array[_node->x_coord+1][_node->y_coord];
+	}
+	if (_node->south_is_open == true)
+	{
+		holder[2] = small_array[_node->x_coord][_node->y_coord - 1];
+	}
+	if (_node->west_is_open == true)
+	{
+		holder[3] = small_array[_node->x_coord - 1][_node->y_coord];
+	}
+	return holder;
+}
+
+bool list_sort_pathfinding(const pathing_structure * a, const pathing_structure * b)
+{
+	return a->child->f < b->child->f;
+}
+
 vector<int> check_neighbors_dfs(int x, int y, MAZE_SIZE size)
 {
 	vector<int> holder(5,0);
@@ -868,7 +987,7 @@ vector<int> check_neighbors_dfs(int x, int y, MAZE_SIZE size)
 			if (small_array[x][y+1]->has_been_visited == false)
 			{
 				holder[0]++;
-				holder[1]++;
+				holder[3]++;
 			}
 		}
 
@@ -877,7 +996,7 @@ vector<int> check_neighbors_dfs(int x, int y, MAZE_SIZE size)
 			if (small_array[x][y-1]->has_been_visited == false)
 			{
 				holder[0]++;
-				holder[3]++;
+				holder[1]++;
 			}
 		}
 		break;

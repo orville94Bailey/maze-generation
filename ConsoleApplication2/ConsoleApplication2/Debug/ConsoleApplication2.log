@@ -1,3 +1,5 @@
 ﻿  ConsoleApplication2.cpp
-c:\users\deana\documents\github\maze-generation\consoleapplication2\consoleapplication2\consoleapplication2.cpp(70): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\deana\documents\github\maze-generation\consoleapplication2\consoleapplication2\consoleapplication2.cpp(92): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\deana\documents\github\maze-generation\consoleapplication2\consoleapplication2\consoleapplication2.cpp(910): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\deana\documents\github\maze-generation\consoleapplication2\consoleapplication2\consoleapplication2.cpp(921): warning C4715: 'heuristic_pathfinding': not all control paths return a value
   ConsoleApplication2.vcxproj -> C:\Users\Deana\Documents\GitHub\maze-generation\ConsoleApplication2\Debug\ConsoleApplication2.exe
