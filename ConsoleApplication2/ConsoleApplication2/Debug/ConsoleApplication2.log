@@ -1,5 +1,36 @@
-﻿  ConsoleApplication2.cpp
-c:\users\deana\documents\github\maze-generation\consoleapplication2\consoleapplication2\consoleapplication2.cpp(92): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-c:\users\deana\documents\github\maze-generation\consoleapplication2\consoleapplication2\consoleapplication2.cpp(910): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-c:\users\deana\documents\github\maze-generation\consoleapplication2\consoleapplication2\consoleapplication2.cpp(921): warning C4715: 'heuristic_pathfinding': not all control paths return a value
-  ConsoleApplication2.vcxproj -> C:\Users\Deana\Documents\GitHub\maze-generation\ConsoleApplication2\Debug\ConsoleApplication2.exe
+﻿Build started 3/12/2016 10:28:01 AM.
+     1>Project "C:\Users\Orville\Documents\GitHub\maze-generation\ConsoleApplication2\ConsoleApplication2\ConsoleApplication2.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Yu"stdafx.h" /Fp"Debug\ConsoleApplication2.pch" /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt ConsoleApplication2.cpp
+         ConsoleApplication2.cpp
+     1>c:\users\orville\documents\github\maze-generation\consoleapplication2\consoleapplication2\consoleapplication2.cpp(110): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+     1>c:\users\orville\documents\github\maze-generation\consoleapplication2\consoleapplication2\consoleapplication2.cpp(907): error C3867: 'std::vector<node *,std::allocator<_Ty>>::begin': non-standard syntax; use '&' to create a pointer to member
+                 with
+                 [
+                     _Ty=node *
+                 ]
+     1>c:\users\orville\documents\github\maze-generation\consoleapplication2\consoleapplication2\consoleapplication2.cpp(907): error C2679: binary '=': no operator found which takes a right-hand operand of type 'overloaded-function' (or there is no acceptable conversion)
+         c:\program files (x86)\microsoft visual studio 14.0\vc\include\vector(391): note: could be 'std::_Vector_iterator<std::_Vector_val<std::_Simple_types<pathing_structure>>> &std::_Vector_iterator<std::_Vector_val<std::_Simple_types<pathing_structure>>>::operator =(std::_Vector_iterator<std::_Vector_val<std::_Simple_types<pathing_structure>>> &&)'
+         c:\program files (x86)\microsoft visual studio 14.0\vc\include\vector(391): note: or       'std::_Vector_iterator<std::_Vector_val<std::_Simple_types<pathing_structure>>> &std::_Vector_iterator<std::_Vector_val<std::_Simple_types<pathing_structure>>>::operator =(const std::_Vector_iterator<std::_Vector_val<std::_Simple_types<pathing_structure>>> &)'
+         c:\users\orville\documents\github\maze-generation\consoleapplication2\consoleapplication2\consoleapplication2.cpp(907): note: while trying to match the argument list '(std::_Vector_iterator<std::_Vector_val<std::_Simple_types<pathing_structure>>>, overloaded-function)'
+     1>c:\users\orville\documents\github\maze-generation\consoleapplication2\consoleapplication2\consoleapplication2.cpp(907): error C3867: 'std::vector<node *,std::allocator<_Ty>>::end': non-standard syntax; use '&' to create a pointer to member
+                 with
+                 [
+                     _Ty=node *
+                 ]
+     1>c:\users\orville\documents\github\maze-generation\consoleapplication2\consoleapplication2\consoleapplication2.cpp(907): error C2678: binary '!=': no operator found which takes a left-hand operand of type 'std::_Vector_iterator<std::_Vector_val<std::_Simple_types<pathing_structure>>>' (or there is no acceptable conversion)
+         c:\program files (x86)\microsoft visual studio 14.0\vc\include\vector(209): note: could be 'bool std::_Vector_const_iterator<std::_Vector_val<std::_Simple_types<pathing_structure>>>::operator !=(const std::_Vector_const_iterator<std::_Vector_val<std::_Simple_types<pathing_structure>>> &) const'
+         c:\program files (x86)\microsoft visual studio 14.0\vc\include\exception(346): note: or       'bool std::operator !=(const std::exception_ptr &,const std::exception_ptr &) throw()' [found using argument-dependent lookup]
+         c:\program files (x86)\microsoft visual studio 14.0\vc\include\exception(351): note: or       'bool std::operator !=(std::nullptr_t,const std::exception_ptr &) throw()' [found using argument-dependent lookup]
+         c:\program files (x86)\microsoft visual studio 14.0\vc\include\exception(356): note: or       'bool std::operator !=(const std::exception_ptr &,std::nullptr_t) throw()' [found using argument-dependent lookup]
+         c:\program files (x86)\microsoft visual studio 14.0\vc\include\system_error(388): note: or       'bool std::operator !=(const std::error_code &,const std::error_code &) noexcept' [found using argument-dependent lookup]
+         c:\program files (x86)\microsoft visual studio 14.0\vc\include\system_error(395): note: or       'bool std::operator !=(const std::error_code &,const std::error_condition &) noexcept' [found using argument-dependent lookup]
+         c:\program files (x86)\microsoft visual studio 14.0\vc\include\system_error(402): note: or       'bool std::operator !=(const std::error_condition &,const std::error_code &) noexcept' [found using argument-dependent lookup]
+         c:\program files (x86)\microsoft visual studio 14.0\vc\include\system_error(409): note: or       'bool std::operator !=(const std::error_condition &,const std::error_condition &) noexcept' [found using argument-dependent lookup]
+         c:\users\orville\documents\github\maze-generation\consoleapplication2\consoleapplication2\consoleapplication2.cpp(907): note: while trying to match the argument list '(std::_Vector_iterator<std::_Vector_val<std::_Simple_types<pathing_structure>>>, overloaded-function)'
+     1>c:\users\orville\documents\github\maze-generation\consoleapplication2\consoleapplication2\consoleapplication2.cpp(938): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+     1>Done Building Project "C:\Users\Orville\Documents\GitHub\maze-generation\ConsoleApplication2\ConsoleApplication2\ConsoleApplication2.vcxproj" (Build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:02.89

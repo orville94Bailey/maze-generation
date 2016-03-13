@@ -36,15 +36,33 @@ node* huge_array[1000][1000];
 //testing
 
 struct pathing_structure {
-	node* parent = NULL;
-	node* child = NULL;
-	pathing_structure(node* child_pointer)
+
+private:
+	node* parent_node = NULL;
+	node* current_node = NULL;
+	vector<node*> child_nodes;
+public:
+	pathing_structure(node* parent_node, node* current_node)
 	{
-		child = child_pointer;
+		this->parent_node = parent_node;
+		this->current_node = current_node;
 	}
-	void set_parent_node(node* parent_pointer)
+	void set_children_vector(vector<node*> children_vector)
 	{
-		parent = parent_pointer;
+		child_nodes.resize(4);
+		child_nodes = children_vector;
+	}
+	node* get_parent()
+	{
+		return parent_node;
+	}
+	node* get_current()
+	{
+		return current_node;
+	}
+	vector<node*> get_child_vector()
+	{
+		return child_nodes;
 	}
 
 };
@@ -870,7 +888,7 @@ vector<node*> generate_path(node * start, node * goal, MAZE_SIZE size)
 		//push start onto the open list
 		start->g = 0;
 		start->f = start->g + heuristic_pathfinding(start->x_coord, start->y_coord, size);
-		open_pathfinding.push_back(new pathing_structure(start));
+		open_pathfinding.push_back(new pathing_structure(NULL, start));
 			//set closed list to empty
 		closed_pathfinding.clear();
 			//while open is not empty
@@ -882,15 +900,19 @@ vector<node*> generate_path(node * start, node * goal, MAZE_SIZE size)
 			parent = open_pathfinding.front();
 			open_pathfinding.pop_front();
 			//make a vector of node's kids
-			holder = get_neighbors_pathfinding(parent->child);
+			holder = get_neighbors_pathfinding(parent->get_parent());
+			parent->set_children_vector(holder);
 			//for each kid
+
 			for (it = holder.begin; it != holder.end; it++)
 			{
+				//setup parent pointer
+				//kid.f = parent.g + 1 + heuristic(kid)
 
+				//if kid == goal makepath on kid
+				//if kid not in closed list push onto open list
 			}
-			//kid.f = parent.g + 1 + heuristic(kid)
-			//if kid == goal makepath on kid
-			//if kid not in closed list push onto open list
+			
 			//push grabbed node onto closed list
 		}
 			
@@ -948,9 +970,9 @@ vector<node*> get_neighbors_pathfinding(node* _node)
 	return holder;
 }
 
-bool list_sort_pathfinding(const pathing_structure * a, const pathing_structure * b)
+bool list_sort_pathfinding(pathing_structure * a, pathing_structure * b)
 {
-	return a->child->f < b->child->f;
+	return a->get_parent()->f < b->get_parent()->f;
 }
 
 vector<int> check_neighbors_dfs(int x, int y, MAZE_SIZE size)
