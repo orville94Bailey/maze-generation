@@ -12,6 +12,12 @@ node::node(int x, int y)
 	is_in_frontier = false;
 	x_coord = x;
 	y_coord = y;
+
+	children_nodes.resize(4);
+	for (int i = 0; i < children_nodes.size(); i++)
+	{
+		children_nodes[i] = NULL;
+	}
 }
 
 

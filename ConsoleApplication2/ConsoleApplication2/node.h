@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+
 class node
 {
 public:
@@ -14,5 +16,8 @@ public:
 	int g;
 	int x_coord;
 	int y_coord;
+
+	node* parent_node;
+	std::vector<node *> children_nodes;
 };
 

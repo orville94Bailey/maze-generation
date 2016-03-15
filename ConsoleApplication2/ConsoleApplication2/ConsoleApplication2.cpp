@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "node.h"
+#include <algorithm>
 #include <list>
 #include <queue>
 #include <stdlib.h>
@@ -35,40 +36,9 @@ node* large_array[500][500];
 node* huge_array[1000][1000];
 //testing
 
-struct pathing_structure {
 
-private:
-	node* parent_node = NULL;
-	node* current_node = NULL;
-	vector<node*> child_nodes;
-public:
-	pathing_structure(node* parent_node, node* current_node)
-	{
-		this->parent_node = parent_node;
-		this->current_node = current_node;
-	}
-	void set_children_vector(vector<node*> children_vector)
-	{
-		child_nodes.resize(4);
-		child_nodes = children_vector;
-	}
-	node* get_parent()
-	{
-		return parent_node;
-	}
-	node* get_current()
-	{
-		return current_node;
-	}
-	vector<node*> get_child_vector()
-	{
-		return child_nodes;
-	}
-
-};
-
-list<pathing_structure*> closed_pathfinding;
-list<pathing_structure*> open_pathfinding;
+list<node*> closed_pathfinding;
+list<node*> open_pathfinding;
 
 enum MAZE_SIZE
 {
@@ -96,11 +66,11 @@ int neighbor_info_to_direction(vector<int>, BIAS_DIRECTION);
 
 void generate_dfs(MAZE_SIZE,BIAS_DIRECTION);
 
-vector<node*> generate_path(node* start, node* goal, MAZE_SIZE size);
-vector<node*> make_path(pathing_structure*);
+node* generate_path(node* start, node* goal, MAZE_SIZE size);
+void make_path(node*, MAZE_SIZE);
 float heuristic_pathfinding(int node_x, int node_y, MAZE_SIZE size);
 vector<node*> get_neighbors_pathfinding(node*);
-bool list_sort_pathfinding(const pathing_structure * a, const pathing_structure * b);
+bool list_sort_pathfinding(node * a, node * b);
 
 
 
@@ -110,6 +80,8 @@ int main()
 	srand(time(NULL));
 	initialize_array(SMALL);
 	generate_dfs(SMALL, VERTICAL);
+	print_array(SMALL);
+	make_path(generate_path(small_array[0][0], small_array[24][79], SMALL), SMALL);
 	print_array(SMALL);
 	deconstruct_maze(SMALL);
 	cin.sync();
@@ -720,7 +692,7 @@ void print_array(MAZE_SIZE size)
 				else if (!small_array[i][l]->north_is_open && !small_array[i][l]->east_is_open &&
 					!small_array[i][l]->south_is_open && !small_array[i][l]->west_is_open)
 				{
-					cout << ' ';
+					cout << '*';
 				}
 				else
 				{
@@ -875,12 +847,11 @@ void generate_dfs(MAZE_SIZE size, BIAS_DIRECTION dir)
 
 }
 
-vector<node*> generate_path(node * start, node * goal, MAZE_SIZE size)
+node* generate_path(node * start, node * goal, MAZE_SIZE size)
 {
 	vector<node *> holder(4,NULL);
-	pathing_structure* parent = NULL;
-	pathing_structure* child = NULL;
-	vector<pathing_structure>::iterator it;
+	node* parent;
+	int tester = 0;
 
 	switch (size)
 	{
@@ -888,31 +859,65 @@ vector<node*> generate_path(node * start, node * goal, MAZE_SIZE size)
 		//push start onto the open list
 		start->g = 0;
 		start->f = start->g + heuristic_pathfinding(start->x_coord, start->y_coord, size);
-		open_pathfinding.push_back(new pathing_structure(NULL, start));
+		open_pathfinding.push_back(start);
 			//set closed list to empty
 		closed_pathfinding.clear();
 			//while open is not empty
 		while (open_pathfinding.size()>0)
 		{
+			cout << tester << " step in pathfinding" << endl;
+			tester++;
+			cin.sync();
+			cin.get();
+
 			//sort open on node.f
 			open_pathfinding.sort(list_sort_pathfinding);
 			//take node with smallest f
 			parent = open_pathfinding.front();
 			open_pathfinding.pop_front();
 			//make a vector of node's kids
-			holder = get_neighbors_pathfinding(parent->get_parent());
-			parent->set_children_vector(holder);
-			//for each kid
+			holder = get_neighbors_pathfinding(parent);
+			parent->children_nodes = holder;
+			
+			//TESTING
+			for (int i = 0; i < holder.size(); i++)
+			{
+				int num_children = 0;
+				if (holder[i] != NULL)
+				{
+					num_children++;
+				}
+				cout << num_children << " in holder" << endl;
+				cin.sync();
+				cin.get();
+			}
 
-			for (it = holder.begin; it != holder.end; it++)
+			//for each kid
+			for (int i = 0; i < holder.size(); i++)
 			{
 				//setup parent pointer
-				//kid.f = parent.g + 1 + heuristic(kid)
+				if (holder[i] != NULL)
+				{
+					holder[i]->parent_node = parent;
+					holder[i]->f = parent->g + 1 + heuristic_pathfinding(holder[i]->x_coord, holder[i]->y_coord, size);
+					//kid.f = parent.g + 1 + heuristic(kid)
 
-				//if kid == goal makepath on kid
-				//if kid not in closed list push onto open list
+
+					if (holder[i] == goal)
+					{
+						return holder[i];
+						//if kid == goal makepath on kid
+					}
+
+					if (std::find(closed_pathfinding.begin(), closed_pathfinding.end(), holder[i]) == closed_pathfinding.end())
+					{
+						open_pathfinding.push_back(holder[i]);
+					}
+					//if kid not in closed list push onto open list
+				}
+				
 			}
-			
+			closed_pathfinding.push_front(parent);
 			//push grabbed node onto closed list
 		}
 			
@@ -926,8 +931,36 @@ vector<node*> generate_path(node * start, node * goal, MAZE_SIZE size)
 	default:
 		break;
 	}
-	
-	return vector<node*>();
+}
+
+void make_path(node* start_node, MAZE_SIZE size)
+{
+	node* tracer_node = start_node;
+	int i = 0;
+	switch (size)
+	{
+	case SMALL:
+		while (tracer_node->parent_node != NULL)
+		{
+			cout << i << "th step in path" << endl;
+			cin.sync();
+			cin.get();
+			small_array[tracer_node->y_coord][tracer_node->x_coord]->east_is_open = false;
+			small_array[tracer_node->y_coord][tracer_node->x_coord]->north_is_open = false;
+			small_array[tracer_node->y_coord][tracer_node->x_coord]->west_is_open = false;
+			small_array[tracer_node->y_coord][tracer_node->x_coord]->south_is_open = false;
+			tracer_node = tracer_node->parent_node;
+		}
+		break;
+	case MEDIUM:
+		break;
+	case LARGE:
+		break;
+	case GIANT:
+		break;
+	default:
+		break;
+	}
 }
 
 float heuristic_pathfinding(int node_x, int node_y, MAZE_SIZE size)
@@ -953,26 +986,30 @@ vector<node*> get_neighbors_pathfinding(node* _node)
 	vector<node*> holder(4,NULL);
 	if (_node->north_is_open == true)
 	{
+		cout << "North open" << endl;
 		holder[0] = small_array[_node->x_coord][_node->y_coord + 1];
 	}
 	if (_node->east_is_open == true)
 	{
+		cout << "East Open" << endl;
 		holder[1] = small_array[_node->x_coord+1][_node->y_coord];
 	}
 	if (_node->south_is_open == true)
 	{
+		cout << "South Open" << endl;
 		holder[2] = small_array[_node->x_coord][_node->y_coord - 1];
 	}
 	if (_node->west_is_open == true)
 	{
+		cout << "West open" << endl;
 		holder[3] = small_array[_node->x_coord - 1][_node->y_coord];
 	}
 	return holder;
 }
 
-bool list_sort_pathfinding(pathing_structure * a, pathing_structure * b)
+bool list_sort_pathfinding(node * a, node * b)
 {
-	return a->get_parent()->f < b->get_parent()->f;
+	return a->f < b->f;
 }
 
 vector<int> check_neighbors_dfs(int x, int y, MAZE_SIZE size)
